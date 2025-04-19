@@ -1,0 +1,5 @@
+echo "opencv-python
+numpy
+tensorflow
+matplotlib
+scikit-learn" > Mastitis_Detection/requirements.txt
