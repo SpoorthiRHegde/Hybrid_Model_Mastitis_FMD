@@ -39,7 +39,7 @@ def load_mastitis_dataset(path):
 # === Build Model ===
 def build_mastitis_model():
     base_model = MobileNetV2(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
-    base_model.trainable = True  # Fine-tuning for better accuracy
+    base_model.trainable = True 
 
     model = Sequential([
         base_model,

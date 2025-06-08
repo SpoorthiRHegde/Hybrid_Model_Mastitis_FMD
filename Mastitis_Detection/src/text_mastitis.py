@@ -25,8 +25,6 @@ X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, 
 rf_model = RandomForestClassifier(n_estimators=100, random_state=42)
 gb_model = GradientBoostingClassifier(n_estimators=100, random_state=42)
 svc_model = SVC(kernel='rbf', probability=True, random_state=42)
-
-# Voting ensemble
 model = VotingClassifier(
     estimators=[
         ('RandomForest', rf_model),
