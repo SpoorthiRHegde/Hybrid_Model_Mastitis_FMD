@@ -76,7 +76,7 @@ def train_mastitis_model(data_path):
     ]
 
     model.fit(datagen.flow(X_train, y_train, batch_size=16),
-              epochs=30,
+              epochs=10,
               validation_data=(X_val, y_val),
               callbacks=callbacks,
               verbose=1)

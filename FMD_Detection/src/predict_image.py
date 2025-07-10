@@ -1,13 +1,12 @@
 #foot and mouth image (input)
-
+import os
 import cv2
 import numpy as np
 from tensorflow.keras.models import load_model
-
+current_dir = os.path.dirname(os.path.abspath(__file__))
 # === Load Trained Models ===
-foot_model = load_model("../models/foot_model.h5")
-mouth_model = load_model("../models/mouth_model.h5")
-
+foot_model = load_model(os.path.join(current_dir, '../../FMD_Detection/models/foot_model.h5'))
+mouth_model = load_model(os.path.join(current_dir, '../../FMD_Detection/models/mouth_model.h5'))
 # === Preprocessing Function ===
 def preprocess_image(image_path):
     image = cv2.imread(image_path)

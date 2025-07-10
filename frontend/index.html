@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bovine Disease Detection – FMD & Mastitis Analysis System</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="main-header">
+    <div class="header-content">
+      <h1>Bovine Disease Detection System</h1>
+      <p class="subtitle">FMD & Mastitis Analysis</p>
+    </div>
+    <div class="header-image">
+      <img src="logo.png" alt="Veterinary Icon" class="logo">
+    </div>
+  </header>
+  <div class="container">
+    <!-- Step 1: Disease Selection -->
+    <div id="step1" class="step">
+      <h2>Select Disease</h2>
+      <select id="disease">
+        <option value="">--Select--</option>
+        <option value="mastitis">Mastitis</option>
+        <option value="fmd">Foot & Mouth Disease (FMD)</option>
+      </select>
+      <div class="button-group">
+        <button onclick="goToStep2()">Next</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Input Type Selection -->
+    <div id="step2" class="step hidden">
+      <h2>Select Input Types</h2>
+      <div id="mastitis-options" class="hidden">
+        <div class="checkbox-group">
+          <label><input type="checkbox" name="mastitisInput" value="text"> Text Data</label>
+          <label><input type="checkbox" name="mastitisInput" value="image"> Udder Image</label>
+        </div>
+      </div>
+
+      <div id="fmd-options" class="hidden">
+        <h3>Text Data</h3>
+        <div class="checkbox-group">
+          
+          <label><input type="checkbox" name="fmdTextInput" value="foot"> Foot Symptoms</label>
+          <label><input type="checkbox" name="fmdTextInput" value="mouth"> Mouth Symptoms</label>
+        </div>
+        
+        <h3>Images</h3>
+        <div class="checkbox-group">
+          <label><input type="checkbox" name="fmdImageInput" value="foot"> Foot Image</label>
+          <label><input type="checkbox" name="fmdImageInput" value="mouth"> Mouth Image</label>
+        </div>
+      </div>
+      <div class="button-group">
+        <button onclick="goBackToStep1()">Back</button>
+        <button onclick="goToStep3()">Next</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Data Entry -->
+    <div id="step3" class="step hidden">
+      <h2>Provide Input</h2>
+      <form id="inputForm">
+        <div id="textFields"></div>
+        <div id="imageFields"></div>
+        <div class="button-group">
+          <button type="button" onclick="goBackToStep2()">Back</button>
+          <button type="submit" class="predict-button">Predict</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Step 4: Results -->
+    <div id="step4" class="step hidden">
+      <h2>Prediction Results</h2>
+      <div id="resultDisplay"></div>
+      <div class="button-group">
+        <button onclick="goBackToStep3()">Back</button>
+        <button onclick="restartProcess()">Start New Prediction</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
