@@ -9,11 +9,6 @@ A web-based application for identifying and diagnosing common bovine diseases (M
 - [Features](#features)
 - [Technologies Used](#technologies-used)
 - [System Architecture](#system-architecture)
-- [Impact and Benefits](#impact-and-benefits)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Project Overview
 
