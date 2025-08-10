@@ -1,12 +1,49 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
+import subprocess
 import joblib
 import cv2
 import numpy as np
 import tempfile
 from tensorflow.keras.models import load_model
 import pandas as pd
+import google.generativeai as genai
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+# Configure Gemini API
+#GOOGLE_API_KEY = "AIzaSyBxLKlJGn9K-sHeBMdxjJ5MEycNXpd3jYc"
+genai.configure(api_key="AIzaSyC35sQNpirJ-i0TumT3mk2EFoHdCZLpSU0")  # <-- Replace with your API key
+
+chat_model = genai.GenerativeModel(
+    model_name="gemini-1.5-flash",
+    generation_config={"temperature": 0.7, "top_p": 1, "top_k": 1},
+    safety_settings=[
+        {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+        {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+        {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+        {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+    ]
+)
+
+system_instructions = """
+You are a veterinary assistant chatbot answering all queries of farmers related to Mastitis and Foot and Mouth Disease (FMD) in dairy cows.
+- Provide care suggestions (cleaning, isolation, contacting a vet).
+- Answer general questions also regarding cow health but focus mainly on fmd and mastitis.
+- Respond in the user's language if you can. Default to English.
+- Never diagnose definitively.
+- Also answer:Normal health metrics (temperature, pulse, udder checks) and basic signs of illness relevant to Mastitis/FMD detection in cows.
+- Recommend consulting a vet when fmd or mastitis symptoms are high .
+- when the user says thanks, respond politely and ask if they have more questions
+- Only greet if the user says hello/hi first
+- Never repeat greetings in conversation
+- If no greeting, go straight to the point
+- If asked for more information or details on specific topic: Share *new* extra info only. Never repeat.
+- For irrelevant queries: 
+  "Sorry, I only help with Mastitis and FMD in cows."
+Use short, simple answers suitable for rural farmers.
+"""
+
 
 app = Flask(__name__)
 CORS(app)
@@ -159,6 +196,65 @@ def predict_fmd():
         response['combined_confidence'] = float(avg_prob if avg_prob > 0.5 else 1 - avg_prob)
 
     return jsonify(response)
+
+@app.route('/chat', methods=['POST'])
+def chat():
+    try:
+        data = request.get_json()
+        print("Received data:", data)  # debug print
+
+        message = data.get('message', '').strip()
+        print("Message:", message)  # debug print
+        lat = data.get('latitude',None)
+        lng = data.get('longitude',None)
+        vet_keywords = ['vet', 'veterinarian', 'doctor', 'clinic', 'suggest vet', 'nearby doctor']
+        if any(word in message.lower() for word in vet_keywords):
+            if lat and lng:
+                # Use Google Maps Places API
+                maps_url = f"https://www.google.com/maps/search/vet+clinic/@{lat},{lng},14z"
+                reply = f"📍 You can find nearby vets using Google Maps:\n{maps_url}"
+            else:
+                reply = "📍 Please allow location access so I can suggest nearby vets."
+            return jsonify({"response": reply})
+
+        # if not message:
+        #     return jsonify({"response": "❌ Please enter a message."})
+
+        prompt = f""" {system_instructions} You are a veterinary assistant. Answer briefly (5-6 sentences). Help dairy farmers by explaining or advising about Mastitis or Foot and Mouth Disease (FMD) in cows.\n\nUser: {message}\nAssistant:"""
+
+        # DEBUG: print prompt
+        print("Prompt:", prompt)
+
+        gemini_response = chat_model.generate_content(prompt)
+        print("Gemini response object:", gemini_response)
+
+        if hasattr(gemini_response, "text") and gemini_response.text:
+            reply = gemini_response.text.strip()
+        else:
+            reply = "❌ I couldn't understand that. Try asking in another way."
+
+        return jsonify({"response": reply})
+
+    except Exception as e:
+        print("🔥 ERROR in /chat:", str(e))  # <-- Important
+        return jsonify({
+            "response": "⚠️ Something went wrong while generating a response.",
+            "error": str(e)
+        }), 500
+
+
+
+# @app.route('/run_chatbot', methods=['POST'])
+# def run_chatbot():
+#     try:
+#         # Execute the chatbot.py script and capture output
+#         result = subprocess.run(['python', 'chatbot.py'], capture_output=True, text=True, check=True)
+#         chatbot_output = result.stdout
+#         return jsonify({'chatbot_output': chatbot_output})
+#     except subprocess.CalledProcessError as e:
+#         return jsonify({'error': f'Error running chatbot script: {e.stderr}'}), 500
+#     except Exception as e:
+#         return jsonify({'error': f'An unexpected error occurred: {str(e)}'}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

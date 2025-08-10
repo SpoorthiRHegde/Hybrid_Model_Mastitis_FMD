@@ -1,0 +1,269 @@
+{
+  "buttons": {
+    "processing": "Processing...",
+     "download_pdf": "Download PDF Report"
+  },
+  "errors": {
+    "prediction": "Error during prediction: {{error}}",
+    "network": "Network error occurred",
+    "pdf_generation": "Error generating PDF",
+    "chatbot": "Error contacting the bot.",
+    "location": "Location access denied. Please enable it to suggest nearby veterinarians."
+  },
+  "suggestions": {
+    "mastitis_title": "Treatment Suggestions (Mastitis)",
+    "mastitis_high": [
+      "🔴 Consult veterinarian immediately",
+      "🧼 Clean udders with antiseptic solution",
+      "💉 Administer prescribed antibiotics"
+    ],
+    "mastitis_medium": [
+      "🟠 Monitor for swelling or clots in milk",
+      "🧪 Test milk if possible"
+    ],
+    "mastitis_low": [
+      "🟡 Low risk. Continue monitoring udder condition",
+      "🥛 Maintain hygiene during milking"
+    ],
+    "mastitis_negative": [
+      "🟢 No mastitis symptoms detected",
+      "🧼 Maintain udder hygiene"
+    ],
+    "fmd_title": "Treatment Suggestions (FMD)",
+    "fmd_high": [
+      "🔴 Immediately isolate infected cow",
+      "💉 Consult vet for supportive care"
+    ],
+    "fmd_medium": [
+      "🟠 Monitor for mouth/foot blisters",
+      "🧪 Consider diagnostic tests"
+    ],
+    "fmd_low": [
+      "🟡 Low probability. Maintain hygiene",
+      "🚿 Clean feeding troughs regularly"
+    ],
+    "fmd_negative": [
+      "🟢 No FMD symptoms found",
+      "💉 Ensure animals are vaccinated"
+    ]
+  },
+  "title": "Bovine Disease Identification System",
+  "subtitle": "FMD and Mastitis Analysis",
+  "select": "Select",
+  "select_disease": "Select Disease",
+  "mastitis": "Mastitis",
+  "fmd": "Foot and Mouth Disease (FMD)",
+  "next": "Next",
+  "select_input": "Select Input Type",
+  "text_data": "Text Data",
+  "udder_image": "Udder Image",
+  "foot_symptoms": "Foot Symptoms",
+  "mouth_symptoms": "Mouth Symptoms",
+  "images": "Images",
+  "foot_image": "Foot Image",
+  "mouth_image": "Mouth Image",
+  "back": "Back",
+  "provide_input": "Provide Input",
+  "predict": "Predict",
+  "prediction_results": "Prediction Results",
+  "new_prediction": "Start New Prediction",
+  "download_report": "Download PDF Report",
+  "chatbot": "Chatbot",
+  "labels": {
+    "confidence": "Confidence",
+    "foot_image": "Foot Image",
+    "mouth_image": "Mouth Image",
+    "select": "Select",
+    "no_file_chosen": "No file chosen",
+    "choose_files": "Choose files",
+    "temperature": "Temperature",
+    "udder_image": "Udder Image",
+    "hardness": "Udder Hardness",
+    "milk_color": "Milk Color",
+    "pain": "Pain Level",
+    "milk_yield": "Milk Yield",
+    "milk_production": "Milk Production",
+    "lethargy": "Lethargy",
+    "difficulty_walking": "Difficulty Walking",
+    "foot_blister": "Foot Blister",
+    "foot_swelling": "Foot Swelling",
+    "hoof_detachment": "Hoof Detachment",
+    "mouth_ulcers": "Mouth Ulcers",
+    "mouth_blister": "Mouth Blisters",
+    "salivation": "Salivation",
+    "nasal_discharge": "Nasal Discharge"
+  },
+  "chatbot_title": "Ask About Mastitis or FMD",
+  "chatbot_placeholder": "Type your question here",
+  "send": "Send",
+  "sections": {
+    "mastitis_symptoms": "Mastitis Symptoms",
+    "foot_symptoms": "Foot Symptoms",
+    "mouth_symptoms": "Mouth Symptoms"
+  },
+  "results": {
+    "image_analysis": "Image Analysis",
+    "text_analysis": "Text Analysis",
+    "final_diagnosis": "Final Diagnosis",
+    "combined_analysis": "Note: This result combines both text and image analysis for more accurate evaluation",
+    "infected": "Infected",
+    "foot_symptoms_analysis": "Foot Symptoms Analysis",
+    "mouth_symptoms_analysis": "Mouth Symptoms Analysis",
+    "non_infected": "Not Infected",
+    "healthy": "Not Infected",
+    "foot_image_analysis": "Foot Image Analysis",
+    "mouth_image_analysis": "Mouth Image Analysis"
+  },
+  "disease_features": {
+    "mastitis": {
+      "temperature": "Temperature (°C)",
+      "hardness": "Udder Hardness",
+      "milk_color": "Milk Color",
+      "pain": "Pain Level",
+      "milk_yield": "Milk Yield Reduction",
+      "options": {
+        "hardness": [
+          "0: Very soft, normal udder",
+          "1: Slightly firm, early warning",
+          "2: Mild firmness, possible minor infection",
+          "3: Moderate firmness, visible swelling",
+          "4: Severe firmness, advanced infection",
+          "5: Extremely firm, critical condition"
+        ],
+        "milk_color": [
+          "0: Normal milk color, no infection",
+          "1: Slightly white, minor concern",
+          "2: Cloudy, early infection stages",
+          "3: Some discoloration, infection present",
+          "4: Signs of blood or pus, late stage",
+          "5: Severely abnormal, critical condition"
+        ],
+        "pain": [
+          "0: No pain, healthy",
+          "1: Minor pain, slight discomfort",
+          "2: Mild discomfort, early infection",
+          "3: Moderate pain, needs attention",
+          "4: Severe pain, chronic",
+          "5: Extreme pain, emergency care"
+        ],
+        "milk_yield": [
+          "0: Normal yield, healthy udder",
+          "1: Slightly reduced yield",
+          "2: Noticeably reduced yield",
+          "3: Significantly reduced yield",
+          "4: Severely reduced yield",
+          "5: Almost no milk production"
+        ]
+      }
+    },
+    "foot": {
+      "temperature": "Temperature (°C)",
+      "milk_production": "Milk Production",
+      "lethargy": "Lethargy",
+      "difficulty_walking": "Difficulty Walking",
+      "foot_blister": "Foot Blister",
+      "foot_swelling": "Foot Swelling",
+      "hoof_detachment": "Hoof Detachment",
+      "options": {
+        "milk_production": [
+          "0: Normal production",
+          "1: Slightly reduced",
+          "2: Reduced",
+          "3: Significantly reduced",
+          "4: Severely reduced",
+          "5: Almost no production"
+        ],
+        "lethargy": [
+          "0: Active",
+          "1: Lethargic or no activity"
+        ],
+        "difficulty_walking": [
+          "0: Normal walking",
+          "1: Limping or unable to walk"
+        ],
+        "foot_blister": [
+          "0: No blister",
+          "1: Very small blister",
+          "2: Small, red blister",
+          "3: Medium blister, slight discomfort",
+          "4: Large/multiple blisters",
+          "5: Severe blisters, ruptured/bleeding"
+        ],
+        "foot_swelling": [
+          "0: No swelling",
+          "1: Slight swelling",
+          "2: Mild swelling",
+          "3: Moderate swelling",
+          "4: Severe swelling, limping",
+          "5: Extreme swelling, unable to walk"
+        ],
+        "hoof_detachment": [
+          "0: Normal hoof",
+          "1: Hairline cracks",
+          "2: Slightly loose",
+          "3: Partially detached",
+          "4: Mostly detached",
+          "5: Completely detached"
+        ]
+      }
+    },
+    "mouth": {
+      "temperature": "Temperature (°C)",
+      "milk_production": "Milk Production",
+      "lethargy": "Lethargy",
+      "mouth_ulcers": "Mouth Ulcers",
+      "mouth_blister": "Mouth Blisters",
+      "salivation": "Salivation",
+      "nasal_discharge": "Nasal Discharge",
+      "options": {
+        "milk_production": [
+          "0: Normal production",
+          "1: Slightly reduced",
+          "2: Reduced",
+          "3: Significantly reduced",
+          "4: Severely reduced",
+          "5: Almost no production"
+        ],
+        "lethargy": [
+          "0: Active",
+          "1: Lethargic or no activity"
+        ],
+        "mouth_ulcers": [
+          "0: None",
+          "1: One small ulcer",
+          "2: Few small ulcers",
+          "3: Medium-sized ulcers",
+          "4: Large or multiple ulcers",
+          "5: Severe ulcers preventing eating"
+        ],
+        "mouth_blister": [
+          "0: None",
+          "1: Very small blisters",
+          "2: Small fluid blisters",
+          "3: Medium blisters",
+          "4: Large or multiple blisters",
+          "5: Severe blisters (ruptured)"
+        ],
+        "salivation": [
+          "0: Normal",
+          "1: Excessive drooling"
+        ],
+        "nasal_discharge": [
+          "0: No discharge",
+          "1: Runny/mucous discharge"
+        ]
+      }
+    }
+  },
+  "pdf": {
+    "report_title": "Analysis Report",
+    "entered_inputs": "Entered Input Parameters",
+    "image": "Image",
+    "image_load_error": "Image could not be loaded",
+    "clinical_observation": "Clinical Observation",
+    "results": "Results",
+    "page": "Page",
+    "of": "of",
+    "disclaimer": "DISCLAIMER: This prediction report is generated using automated machine learning models based on the inputs provided. While every effort has been made to ensure accuracy, this tool is intended for informational and preliminary screening purposes only. It is not a substitute for professional veterinary advice, diagnosis, or treatment. Always consult a licensed veterinarian for a thorough examination and appropriate medical care for your animal."
+  }
+}
