@@ -70,9 +70,6 @@ Cattle diseases cause significant economic losses worldwide:
   - Random Forest for symptom analysis
 - SQLite database
 
-### Deployment
-- Docker containerization
-- AWS EC2 (or alternative cloud platform)
 
 ## System Architecture
 
