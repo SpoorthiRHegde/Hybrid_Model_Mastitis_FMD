@@ -47,8 +47,8 @@ function initializeDiseaseFeatures() {
         name: "temperature", 
         label: i18next.t('disease_features.mastitis.temperature'), 
         type: "number", 
-        min: 37.5, 
-        max: 41.0, 
+        min: 35.0, 
+        max: 45.0, 
         step: 0.1 
       },
       { 
@@ -93,8 +93,8 @@ function initializeDiseaseFeatures() {
         name: "temperature", 
         label: i18next.t('disease_features.foot.temperature'), 
         type: "number", 
-        min: 37.5, 
-        max: 41.0, 
+        min: 35.0, 
+        max: 45.0, 
         step: 0.1 
       },
       { 
@@ -157,8 +157,8 @@ function initializeDiseaseFeatures() {
         name: "temperature", 
         label: i18next.t('disease_features.mouth.temperature'), 
         type: "number", 
-        min: 37.5, 
-        max: 41.0, 
+        min: 35.0, 
+        max: 45.0, 
         step: 0.1 
       },
       { 

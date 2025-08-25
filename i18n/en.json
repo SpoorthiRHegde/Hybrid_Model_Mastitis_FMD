@@ -1,4 +1,8 @@
 {
+  "alerts": {
+    "select_input": "Please select an input before continuing.",
+    "select_disease": "Please select a disease before continuing."
+  },
   "buttons": {
     "processing": "Processing...",
      "download_pdf": "Download PDF Report"
@@ -18,7 +22,7 @@
       "💉 Administer prescribed antibiotics"
     ],
     "mastitis_medium": [
-      "🟠 Monitor for swelling or clots in milk",
+      "🟠 Monitor for swelling in the udder or clots in milk.",
       "🧪 Test milk if possible"
     ],
     "mastitis_low": [
@@ -76,7 +80,7 @@
     "select": "Select",
     "no_file_chosen": "No file chosen",
     "choose_files": "Choose files",
-    "temperature": "Temperature",
+    "temperature": "Temperature(°C)",
     "udder_image": "Udder Image",
     "hardness": "Udder Hardness",
     "milk_color": "Milk Color",

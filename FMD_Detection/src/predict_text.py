@@ -40,7 +40,7 @@ def get_common_input():
     temperature = None
     while temperature is None:
         temperature_input = input("Temperature (in °C): ")
-        temperature = validate_input(temperature_input, 37.5, 41.0, "float")
+        temperature = validate_input(temperature_input, 35, 45, "float")
     
     milk_production = None
     while milk_production is None:

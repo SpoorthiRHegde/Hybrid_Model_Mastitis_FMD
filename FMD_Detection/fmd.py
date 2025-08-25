@@ -47,7 +47,7 @@ def validate_input(prompt, min_val, max_val, input_type='float'):
             print("Invalid input. Try again.")
 
 def get_common_input():
-    t = validate_input("Temperature (37.5–41.0): ", 37.5, 41.0)
+    t = validate_input("Temperature (35.0-45.0): ", 35.0, 45.0)
     m = validate_input("Milk production (0–5): ", 0, 5, 'int')
     l = validate_input("Lethargy (0=no, 1=yes): ", 0, 1, 'int')
     return [t, m, l]
