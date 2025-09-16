@@ -13,12 +13,18 @@ function goToStep2() {
   document.getElementById("step1").classList.add("hidden");
   document.getElementById("step2").classList.remove("hidden");
 
+  // Hide all options first
+  document.getElementById("mastitis-options").classList.add("hidden");
+  document.getElementById("fmd-options").classList.add("hidden");
+  document.getElementById("both-options").classList.add("hidden");
+
+  // Show relevant options
   if (selectedDisease === "mastitis") {
     document.getElementById("mastitis-options").classList.remove("hidden");
-    document.getElementById("fmd-options").classList.add("hidden");
   } else if (selectedDisease === "fmd") {
     document.getElementById("fmd-options").classList.remove("hidden");
-    document.getElementById("mastitis-options").classList.add("hidden");
+  } else if (selectedDisease === "both") {
+    document.getElementById("both-options").classList.remove("hidden");
   }
 }
 
@@ -40,6 +46,17 @@ function goToStep3() {
     });
     document.querySelectorAll('input[name="fmdImageInput"]:checked').forEach(checkbox => {
       selectedInputs.push(`image_${checkbox.value}`);
+    });
+  } else if (selectedDisease === "both") {
+    // Process both diseases
+    document.querySelectorAll('input[name="bothMastitisInput"]:checked').forEach(checkbox => {
+      selectedInputs.push(`mastitis_${checkbox.value}`);
+    });
+    document.querySelectorAll('input[name="bothFMDTextInput"]:checked').forEach(checkbox => {
+      selectedInputs.push(`fmd_text_${checkbox.value}`);
+    });
+    document.querySelectorAll('input[name="bothFMDImageInput"]:checked').forEach(checkbox => {
+      selectedInputs.push(`fmd_image_${checkbox.value}`);
     });
   }
 
@@ -64,7 +81,7 @@ function renderInputFields() {
   textContainer.innerHTML = "";
   imgContainer.innerHTML = "";
 
-  const createInputField = (feature) => {
+  const createInputField = (feature, prefix) => {
     const div = document.createElement("div");
     const label = document.createElement("label");
     label.textContent = i18next.t(`labels.${feature.name}`) || feature.label;
@@ -73,7 +90,7 @@ function renderInputFields() {
     if (feature.type === "number") {
       const input = document.createElement("input");
       input.type = "number";
-      input.name = feature.name;
+      input.name = `${prefix}_${feature.name}`;
       input.min = feature.min;
       input.max = feature.max;
       input.step = feature.step || 1;
@@ -81,7 +98,7 @@ function renderInputFields() {
       div.appendChild(input);
     } else if (feature.type === "select") {
       const select = document.createElement("select");
-      select.name = feature.name;
+      select.name = `${prefix}_${feature.name}`;
       select.required = true;
 
       const placeholder = document.createElement("option");
@@ -110,10 +127,7 @@ function renderInputFields() {
     section.innerHTML = `<h3>${label}</h3>`;
     
     features.forEach(feature => {
-      const field = createInputField(feature);
-      if (prefix) {
-        field.querySelector("input, select").name = `${prefix}_${feature.name}`;
-      }
+      const field = createInputField(feature, prefix);
       section.appendChild(field);
     });
     
@@ -168,8 +182,54 @@ function renderInputFields() {
         );
       }
     });
+  } else if (selectedDisease === "both") {
+    // Handle both diseases
+    selectedInputs.forEach(input => {
+      const parts = input.split("_");
+      
+      if (parts[0] === "mastitis") {
+        const type = parts[1];
+        if (type === "text") {
+          textContainer.appendChild(
+            createTextInputSection(
+              i18next.t('sections.mastitis_symptoms'),
+              window.translatedDiseaseFeatures.mastitis,
+              "mastitis"
+            )
+          );
+        } else if (type === "image") {
+          imgContainer.appendChild(
+            createFileInput(
+              i18next.t('labels.udder_image'),
+              "udderImage"
+            )
+          );
+        }
+      } else if (parts[0] === "fmd") {
+        const type = parts[1];
+        const part = parts[2];
+        
+        if (type === "text") {
+          textContainer.appendChild(
+            createTextInputSection(
+              i18next.t(`sections.${part}_symptoms`),
+              window.translatedDiseaseFeatures[part],
+              `fmd_${part}_text`
+            )
+          );
+        } else if (type === "image") {
+          imgContainer.appendChild(
+            createFileInput(
+              i18next.t(`labels.${part}_image`),
+              `fmd_${part}Image`
+            )
+          );
+        }
+      }
+    });
   }
 }
+
 
 function safeGenerateSuggestionItems(translationKey) {
   try {
@@ -250,160 +310,265 @@ function safeGenerateSuggestions(translationKey) {
 }
 function displayResults(data) {
   currentResults = data;
-  const showSuggestionInCombinedOnly = data.text_result && data.image_result;
   const resultContainer = document.getElementById("resultDisplay");
   resultContainer.innerHTML = "";
   
   // Status translation mapping
-  // In the displayResults function, update the statusTranslations object:
-// In the displayResults function, update the statusTranslations object:
-const statusTranslations = {
-  'Infected': i18next.t('results.infected'),
-  'Not Infected': i18next.t('results.non_infected'),
-  'Mastitis Detected': i18next.t('results.infected'),
-  'No Mastitis': i18next.t('results.non_infected'),
-  'Non-infected': i18next.t('results.non_infected'),
-  'Healthy': i18next.t('results.non_infected') // Add this line
-};
+  const statusTranslations = {
+    'Infected': i18next.t('results.infected'),
+    'Not Infected': i18next.t('results.non_infected'),
+    'Mastitis Detected': i18next.t('results.infected'),
+    'No Mastitis': i18next.t('results.non_infected'),
+    'Non-infected': i18next.t('results.non_infected'),
+    'Healthy': i18next.t('results.non_infected')
+  };
   
   const translateStatus = (status) => statusTranslations[status] || status;
 
-  if (selectedDisease === "mastitis") {
-    const textResult = data.text_result;
-    const imageResult = data.image_result;
+  // Debug: Log the received data to see what properties are available
+  console.log("Received data from backend:", data);
+
+  // Display mastitis results if available - check for both formats
+  const hasMastitisResults = data.mastitis_text_result || data.text_result || 
+                            data.mastitis_image_result || data.image_result;
+  
+  if (hasMastitisResults) {
+    const mastitisHeader = document.createElement("h3");
+    mastitisHeader.textContent = i18next.t('mastitis') + " " + i18next.t('results.results');
+    mastitisHeader.className = "disease-header";
+    resultContainer.appendChild(mastitisHeader);
     
-    if (textResult) {
-      const translatedResult = translateStatus(textResult);
-      const isInfected = textResult === 'Mastitis Detected';
-      const confidence = (data.text_confidence * 100).toFixed(1);
+    // Handle text results (check both formats)
+    const textResult = data.mastitis_text_result || data.text_result;
+    const textConfidence = data.mastitis_text_confidence || data.text_confidence;
+    
+    // Handle image results (check both formats)
+    const imageResult = data.mastitis_image_result || data.image_result;
+    const imageConfidence = data.mastitis_image_confidence || data.image_confidence;
+    
+    // Handle combined results for mastitis (check both formats)
+    const combinedResult = data.mastitis_combined_result || data.combined_result;
+    const combinedConfidence = data.mastitis_combined_confidence || data.combined_confidence;
+    
+    // Count how many mastitis results we have
+    const mastitisResultCount = [textResult, imageResult].filter(Boolean).length;
+    
+    // Show individual results only if we have more than one type of result
+    if (mastitisResultCount > 1) {
+      if (textResult) {
+        const translatedResult = translateStatus(textResult);
+        const isInfected = textResult.includes('Mastitis') || textResult.includes('Infected');
+        
+        const textDiv = document.createElement("div");
+        textDiv.className = "result-item";
+        textDiv.innerHTML = `
+          <div class="result-title">${i18next.t('results.text_analysis')}:</div>
+          <div class="result-value ${isInfected ? 'danger' : 'success'}">
+            ${translatedResult} ${textConfidence ? `(${(textConfidence * 100).toFixed(1)}% ${i18next.t('labels.confidence')})` : ''}
+          </div>
+          ${generateMastitisSuggestions(textConfidence || 0, isInfected)}
+        `;
+        resultContainer.appendChild(textDiv);
+      }
       
-      const textDiv = document.createElement("div");
-      const suggestions = showSuggestionInCombinedOnly ? "" : generateMastitisSuggestions(data.text_confidence, isInfected);
-      textDiv.className = "result-item";
-      textDiv.innerHTML = `
-        <div class="result-title">${i18next.t('results.text_analysis')}:</div>
-        <div class="result-value ${isInfected ? 'danger' : 'success'}">
-          ${translatedResult} (${confidence}% ${i18next.t('labels.confidence')})
-        </div>
-        ${suggestions}
-      `;
-      resultContainer.appendChild(textDiv);
+      if (imageResult) {
+        const translatedResult = translateStatus(imageResult);
+        const isInfected = imageResult.includes('Infected');
+        
+        const imgDiv = document.createElement("div");
+        imgDiv.className = "result-item";
+        imgDiv.innerHTML = `
+          <div class="result-title">${i18next.t('results.image_analysis')}:</div>
+          <div class="result-value ${isInfected ? 'danger' : 'success'}">
+            ${translatedResult} ${imageConfidence ? `(${(imageConfidence * 100).toFixed(1)}% ${i18next.t('labels.confidence')})` : ''}
+          </div>
+          ${generateMastitisSuggestions(imageConfidence || 0, isInfected)}
+        `;
+        resultContainer.appendChild(imgDiv);
+      }
     }
     
-if (imageResult) {
-  const translatedResult = translateStatus(imageResult);
-  const isInfected = imageResult === 'Infected';
-  const confidence = (data.image_confidence * 100).toFixed(1);
-  
-  const imgDiv = document.createElement("div");
-  const suggestions = showSuggestionInCombinedOnly ? "" : generateMastitisSuggestions(data.image_confidence, isInfected);
-  imgDiv.className = "result-item";
-  imgDiv.innerHTML = `
-    <div class="result-title">${i18next.t('results.image_analysis')}:</div>
-    <div class="result-value ${isInfected ? 'danger' : 'success'}">
-      ${translatedResult} (${confidence}% ${i18next.t('labels.confidence')})
-    </div>
-    ${suggestions}
-  `;
-  resultContainer.appendChild(imgDiv);
-}    
-    if (textResult && imageResult) {
-  const combinedProb = (data.text_confidence + data.image_confidence) / 2;
-  const isInfected = combinedProb > 0.5;
-  const combinedResult = isInfected ? 'Mastitis Detected' : 'No Mastitis';
-  const translatedCombinedResult = translateStatus(combinedResult);
-  
-  const combinedDiv = document.createElement("div");
-  combinedDiv.className = "final-result";
-  combinedDiv.innerHTML = `
-    <div class="result-title">${i18next.t('results.final_diagnosis')}:</div>
-    <div class="result-value ${isInfected ? 'danger' : 'success'}">
-      ${translatedCombinedResult} (${(combinedProb * 100).toFixed(1)}% ${i18next.t('labels.confidence')})
-    </div>
-    <p>${i18next.t('results.combined_analysis')}</p>
-    ${generateMastitisSuggestions(combinedProb, isInfected)}
-  `;
-  resultContainer.appendChild(combinedDiv);
-}
+    // Show combined result if available, or show the single result as final diagnosis
+    if (combinedResult || mastitisResultCount === 1) {
+      const finalResult = combinedResult || textResult || imageResult;
+      const finalConfidence = combinedConfidence || textConfidence || imageConfidence;
+      const isInfected = finalResult.includes('Mastitis') || finalResult.includes('Infected');
+      const translatedFinalResult = translateStatus(finalResult);
+      
+      const finalDiv = document.createElement("div");
+      finalDiv.className = "final-result";
+      
+      if (mastitisResultCount > 1) {
+        // Multiple inputs - show as combined result
+        finalDiv.innerHTML = `
+          <div class="result-title">${i18next.t('results.final_diagnosis')} (Mastitis):</div>
+          <div class="result-value ${isInfected ? 'danger' : 'success'}">
+            ${translatedFinalResult} ${finalConfidence ? `(${(finalConfidence * 100).toFixed(1)}% ${i18next.t('labels.confidence')})` : ''}
+          </div>
+          <p>${i18next.t('results.combined_analysis')}</p>
+          ${generateMastitisSuggestions(finalConfidence || 0, isInfected)}
+        `;
+      } else {
+        // Single input - show as final result without "combined" wording
+        finalDiv.innerHTML = `
+          <div class="result-title">${i18next.t('results.final_diagnosis')} (Mastitis):</div>
+          <div class="result-value ${isInfected ? 'danger' : 'success'}">
+            ${translatedFinalResult} ${finalConfidence ? `(${(finalConfidence * 100).toFixed(1)}% ${i18next.t('labels.confidence')})` : ''}
+          </div>
+          ${generateMastitisSuggestions(finalConfidence || 0, isInfected)}
+        `;
+      }
+      
+      resultContainer.appendChild(finalDiv);
+    }
     
-    if (data.text_error) {
+    // Show errors if any (check both formats)
+    if (data.mastitis_text_error || data.text_error) {
       const errorDiv = document.createElement("div");
       errorDiv.className = "error-message";
-      errorDiv.textContent = `${i18next.t('errors.text')}: ${data.text_error}`;
+      errorDiv.textContent = `${i18next.t('errors.text')}: ${data.mastitis_text_error || data.text_error}`;
       resultContainer.appendChild(errorDiv);
     }
     
-    if (data.image_error) {
+    if (data.mastitis_image_error || data.image_error) {
       const errorDiv = document.createElement("div");
       errorDiv.className = "error-message";
-      errorDiv.textContent = `${i18next.t('errors.image')}: ${data.image_error}`;
+      errorDiv.textContent = `${i18next.t('errors.image')}: ${data.mastitis_image_error || data.image_error}`;
       resultContainer.appendChild(errorDiv);
     }
-  } 
-  else if (selectedDisease === "fmd") {
-    const results = [];
-    let validFMDInputs = 0;
+  }
+  
+  // Display FMD results ONLY if FMD was selected or if both diseases were selected
+  let hasFMDResults = false;
+  
+  // Only check for FMD results if FMD was actually selected
+  if (selectedDisease === "fmd" || selectedDisease === "both") {
+    const fmdResultTypes = ['foot_text', 'mouth_text', 'foot_image', 'mouth_image', 
+                           'fmd_foot_text', 'fmd_mouth_text', 'fmd_foot_image', 'fmd_mouth_image'];
     
-        ['foot_text', 'mouth_text', 'foot_image', 'mouth_image'].forEach(type => {
-      const resultKey = `${type}_result`;
-      if (data[resultKey]) {
-        const [part] = type.split('_');
-        results.push({
-          type,
-          title: i18next.t(`results.${part}_${type.includes('text') ? 'symptoms' : 'image'}_analysis`),
-          result: data[resultKey],
-          translatedResult: translateStatus(data[resultKey]), // Add this line
-          confidence: data[`${type}_confidence`],
-          isInfected: data[resultKey] === 'Infected'
+    fmdResultTypes.forEach(type => {
+      if (data[`${type}_result`]) hasFMDResults = true;
+    });
+    
+    if (hasFMDResults || data.fmd_combined_result) {
+      // Add separator if both diseases are shown
+      if (hasMastitisResults) {
+        const separator = document.createElement("hr");
+        separator.className = "result-separator";
+        resultContainer.appendChild(separator);
+      }
+      
+      const fmdHeader = document.createElement("h3");
+      fmdHeader.textContent = i18next.t('fmd') + " " + i18next.t('results.results');
+      fmdHeader.className = "disease-header";
+      resultContainer.appendChild(fmdHeader);
+      
+      const results = [];
+      fmdResultTypes.forEach(type => {
+        const resultKey = `${type}_result`;
+        if (data[resultKey]) {
+          const parts = type.split('_');
+          const part = parts.length > 2 ? parts[1] : parts[0]; // Handle both fmd_foot_text and foot_text formats
+          const analysisType = parts.length > 2 ? parts[2] : parts[1]; // Handle both formats
+          
+          results.push({
+            type,
+            title: i18next.t(`results.${part}_${analysisType}_analysis`),
+            result: data[resultKey],
+            translatedResult: translateStatus(data[resultKey]),
+            confidence: data[`${type}_confidence`],
+            isInfected: data[resultKey] === 'Infected'
+          });
+        }
+      });
+      
+      // Count how many FMD results we have
+      const fmdResultCount = results.length;
+      
+      // Show individual results only if we have more than one type of result
+      if (fmdResultCount > 1) {
+        results.forEach(item => {
+          const div = document.createElement("div");
+          div.className = "result-item";
+          div.innerHTML = `
+            <div class="result-title">${item.title}:</div>
+            <div class="result-value ${item.isInfected ? 'danger' : 'success'}">
+              ${item.translatedResult} ${item.confidence ? `(${(item.confidence * 100).toFixed(1)}% ${i18next.t('labels.confidence')})` : ''}
+            </div>
+            ${generateFMDSuggestions(item.confidence || 0, item.isInfected)}
+          `;
+          resultContainer.appendChild(div);
         });
       }
-    });
-    
-    results.forEach(item => {
-      const div = document.createElement("div");
-      const suggestions = data.combined_result ? null : generateFMDSuggestions(item.confidence, item.isInfected);
-      div.className = "result-item";
-      div.innerHTML = `
-        <div class="result-title">${item.title}:</div>
-        <div class="result-value ${item.isInfected ? 'danger' : 'success'}">
-          ${item.translatedResult} (${(item.confidence * 100).toFixed(1)}% ${i18next.t('labels.confidence')})
-        </div>
-        ${suggestions || ''}
-      `;
-      resultContainer.appendChild(div);
-    });
-    
-    if (data.combined_result) {
-      const combinedDiv = document.createElement("div");
-      combinedDiv.className = "final-result";
-      const translatedCombinedResult = translateStatus(data.combined_result);
-      combinedDiv.innerHTML = `
-        <div class="result-title">${i18next.t('results.final_diagnosis')}:</div>
-        <div class="result-value ${data.combined_result === 'Infected' ? 'danger' : 'success'}">
-          ${translatedCombinedResult} (${(data.combined_confidence * 100).toFixed(1)}% ${i18next.t('labels.confidence')})
-        </div>  
-        <p>${i18next.t('results.combined_analysis')}</p>
-        ${generateFMDSuggestions(data.combined_confidence, data.combined_result === 'Infected')}
-      `;
-      resultContainer.appendChild(combinedDiv);
-    }
-    
-
-    
-    ['foot_text', 'mouth_text', 'foot_image', 'mouth_image'].forEach(type => {
-      const errorKey = `${type}_error`;
-      if (data[errorKey]) {
-        const errorDiv = document.createElement("div");
-        errorDiv.className = "error-message";
-        errorDiv.textContent = `${i18next.t(`errors.${type.replace('_', '-')}`)}: ${data[errorKey]}`;
-        resultContainer.appendChild(errorDiv);
+      
+      // Check for FMD combined result
+      const fmdCombinedResult = data.fmd_combined_result;
+      const fmdCombinedConfidence = data.fmd_combined_confidence;
+      
+      // Show combined result if available, or show the single result as final diagnosis
+      if (fmdCombinedResult || fmdResultCount > 0) {
+        const finalResult = fmdCombinedResult || (results.length > 0 ? results[0].result : null);
+        const finalConfidence = fmdCombinedConfidence || (results.length > 0 ? results[0].confidence : null);
+        
+        if (finalResult) {
+          const isInfected = finalResult === 'Infected';
+          const translatedFinalResult = translateStatus(finalResult);
+          
+          const finalDiv = document.createElement("div");
+          finalDiv.className = "final-result";
+          
+          if (fmdResultCount > 1) {
+            // Multiple inputs - show as combined result
+            finalDiv.innerHTML = `
+              <div class="result-title">${i18next.t('results.final_diagnosis')} (FMD):</div>
+              <div class="result-value ${isInfected ? 'danger' : 'success'}">
+                ${translatedFinalResult} ${finalConfidence ? `(${(finalConfidence * 100).toFixed(1)}% ${i18next.t('labels.confidence')})` : ''}
+              </div>  
+              <p>${i18next.t('results.combined_analysis')}</p>
+              ${generateFMDSuggestions(finalConfidence || 0, isInfected)}
+            `;
+          } else {
+            // Single input - show as final result without "combined" wording
+            finalDiv.innerHTML = `
+              <div class="result-title">${i18next.t('results.final_diagnosis')} (FMD):</div>
+              <div class="result-value ${isInfected ? 'danger' : 'success'}">
+                ${translatedFinalResult} ${finalConfidence ? `(${(finalConfidence * 100).toFixed(1)}% ${i18next.t('labels.confidence')})` : ''}
+              </div>
+              ${generateFMDSuggestions(finalConfidence || 0, isInfected)}
+            `;
+          }
+          
+          resultContainer.appendChild(finalDiv);
+        }
       }
-    });
+      
+      // Show errors if any
+      fmdResultTypes.forEach(type => {
+        const errorKey = `${type}_error`;
+        if (data[errorKey]) {
+          const errorDiv = document.createElement("div");
+          errorDiv.className = "error-message";
+          errorDiv.textContent = `${i18next.t(`errors.${type.replace(/_/g, '-')}`)}: ${data[errorKey]}`;
+          resultContainer.appendChild(errorDiv);
+        }
+      });
+    }
+  }
+  
+  // If no results were found at all, show a message
+  if (resultContainer.innerHTML === "") {
+    resultContainer.innerHTML = `
+      <div class="error-message">
+        ${i18next.t('errors.no_results')}
+      </div>
+      <div>Debug info: ${JSON.stringify(data)}</div>
+    `;
   }
   
   document.getElementById("step3").classList.add("hidden");
   document.getElementById("step4").classList.remove("hidden");
 }
+
 
 function goBackToStep3() {
   document.getElementById("step4").classList.add("hidden");
@@ -447,9 +612,15 @@ document.getElementById("inputForm").addEventListener("submit", function (e) {
     formData.append("inputTypes[]", input);
   });
 
-  const url = selectedDisease === "mastitis"
-    ? "http://localhost:5000/predict/mastitis"
-    : "http://localhost:5000/predict/fmd";
+  // Determine the endpoint based on selected disease
+  let url;
+  if (selectedDisease === "mastitis") {
+    url = "http://localhost:5000/predict/mastitis";
+  } else if (selectedDisease === "fmd") {
+    url = "http://localhost:5000/predict/fmd";
+  } else if (selectedDisease === "both") {
+    url = "http://localhost:5000/predict/both";
+  }
 
   const predictBtn = form.querySelector('.predict-button');
   const originalText = predictBtn.textContent;
@@ -460,18 +631,28 @@ document.getElementById("inputForm").addEventListener("submit", function (e) {
     method: "POST",
     body: formData
   })
-    .then(res => res.json())
+    .then(res => {
+      // Check if response is JSON
+      const contentType = res.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        return res.json();
+      } else {
+        // If not JSON, read as text to see what we got
+        return res.text().then(text => {
+          throw new Error(`Server returned non-JSON response: ${text.substring(0, 100)}...`);
+        });
+      }
+    })
     .then(data => displayResults(data))
-    // Replace your error handling in the fetch call with:
-.catch(err => {
-  const errorMessage = err.message || 'Unknown error occurred';
-  document.getElementById("resultDisplay").innerHTML = `
-    <div class="error-message">${i18next.t('errors.prediction', { error: errorMessage })}</div>
-  `;
-  document.getElementById("step3").classList.add("hidden");
-  document.getElementById("step4").classList.remove("hidden");
-  console.error("Prediction error:", err); // Log full error for debugging
-})
+    .catch(err => {
+      const errorMessage = err.message || 'Unknown error occurred';
+      document.getElementById("resultDisplay").innerHTML = `
+        <div class="error-message">${i18next.t('errors.prediction', { error: errorMessage })}</div>
+      `;
+      document.getElementById("step3").classList.add("hidden");
+      document.getElementById("step4").classList.remove("hidden");
+      console.error("Prediction error:", err);
+    })
     .finally(() => {
       predictBtn.textContent = originalText;
       predictBtn.disabled = false;
@@ -568,7 +749,7 @@ async function generatePDF() {
   const originalText = downloadBtn.textContent;
   
   try {
-      downloadBtn.textContent = await i18next.t('buttons.processing');
+    downloadBtn.textContent = await i18next.t('buttons.processing');
     downloadBtn.disabled = true;
 
     const doc = new jsPDF({
@@ -599,7 +780,16 @@ async function generatePDF() {
     doc.setFontSize(10);
     doc.text(`Generated: ${new Date().toLocaleString()}`, 20, 27);
 
-    const diseaseName = selectedDisease === 'mastitis' ? 'Mastitis' : 'Foot and Mouth Disease';
+    // Determine disease name based on selection
+    let diseaseName;
+    if (selectedDisease === "mastitis") {
+      diseaseName = 'Mastitis';
+    } else if (selectedDisease === "fmd") {
+      diseaseName = 'Foot and Mouth Disease';
+    } else if (selectedDisease === "both") {
+      diseaseName = 'Mastitis & Foot and Mouth Disease';
+    }
+    
     doc.setFontSize(14);
     doc.text(`${diseaseName} Diagnosis Report`, 20, 35);
 
@@ -615,74 +805,69 @@ async function generatePDF() {
 
     // Process text inputs
     const processedInputs = new Set();
-    if (selectedInputs.some(input => input.includes('text'))) {
-      const textInputs = document.querySelectorAll('input[type="number"], select');
-      textInputs.forEach(input => {
-        if (yPos > 270) { 
-          doc.addPage(); 
-          yPos = 20; 
+    const textInputs = document.querySelectorAll('input[type="number"], select, input[type="text"]');
+    textInputs.forEach(input => {
+      if (yPos > 270) { 
+        doc.addPage(); 
+        yPos = 20; 
+      }
+      
+      let label = cleanLabel(input.previousElementSibling?.textContent || input.name);
+      label = label.replace(/^labels\./, '').replace(/_/g, ' ');
+      
+      if (!label || processedInputs.has(label)) return;
+      
+      processedInputs.add(label);
+      const value = input.value;
+      
+      doc.setFontSize(10);
+      doc.text(`${label}: ${value}`, 25, yPos);
+      yPos += 6;
+    });
+
+    // Process image inputs
+    const imageInputs = document.querySelectorAll('input[type="file"]');
+    for (const input of imageInputs) {
+      if (input.files && input.files[0]) {
+        if (yPos > 180) {
+          doc.addPage();
+          yPos = 20;
         }
-        
+
         let label = cleanLabel(input.previousElementSibling?.textContent || input.name);
         label = label.replace(/^labels\./, '').replace(/_/g, ' ');
-        
-        if (!label || processedInputs.has(label)) return;
-        
-        processedInputs.add(label);
-        const value = input.value;
-        
+
         doc.setFontSize(10);
-        doc.text(`${label}: ${value}`, 25, yPos);
+        doc.text(`${label}:`, 25, yPos);
         yPos += 6;
-      });
+
+        try {
+          const img = new Image();
+          const reader = new FileReader();
+
+          await new Promise((resolve, reject) => {
+            reader.onload = function(e) {
+              img.src = e.target.result;
+              img.onload = function() {
+                const maxWidth = 120;
+                const ratio = maxWidth / img.width;
+                const height = img.height * ratio;
+
+                doc.addImage(img, 'JPEG', 25, yPos, maxWidth, height);
+                yPos += height + 8;
+                resolve();
+              };
+              img.onerror = reject;
+            };
+            reader.readAsDataURL(input.files[0]);
+          });
+        } catch (error) {
+          console.error('Error processing image:', error);
+          doc.text(`[Image not loaded]`, 30, yPos);
+          yPos += 12;
+        }
+      }
     }
-
-    // Process image inputs - Modified to handle multiple images
-   // Process image inputs - Always add all images
-const imageInputs = document.querySelectorAll('input[type="file"]');
-for (const input of imageInputs) {
-  if (input.files && input.files[0]) {
-    if (yPos > 180) {
-      doc.addPage();
-      yPos = 20;
-    }
-
-    let label = cleanLabel(input.previousElementSibling?.textContent || input.name);
-    label = label.replace(/^labels\./, '').replace(/_/g, ' ');
-
-    // REMOVE processedInputs check for images
-    doc.setFontSize(10);
-    doc.text(`${label}:`, 25, yPos);
-    yPos += 6;
-
-    try {
-      const img = new Image();
-      const reader = new FileReader();
-
-      await new Promise((resolve, reject) => {
-        reader.onload = function(e) {
-          img.src = e.target.result;
-          img.onload = function() {
-            const maxWidth = 120;
-            const ratio = maxWidth / img.width;
-            const height = img.height * ratio;
-
-            doc.addImage(img, 'JPEG', 25, yPos, maxWidth, height);
-            yPos += height + 8;
-            resolve();
-          };
-          img.onerror = reject;
-        };
-        reader.readAsDataURL(input.files[0]);
-      });
-    } catch (error) {
-      console.error('Error processing image:', error);
-      doc.text(`[Image not loaded]`, 30, yPos);
-      yPos += 12;
-    }
-  }
-}
-
 
     // Results Section
     doc.setFontSize(12);
@@ -694,54 +879,76 @@ for (const input of imageInputs) {
     yPos += 8;
 
     if (currentResults) {
-      if (selectedDisease === "mastitis") {
-        if (currentResults.text_result) {
-          yPos = addResultSection(doc, 'Text Analysis', currentResults.text_result, currentResults.text_confidence, yPos);
+      // Handle Mastitis results
+      if (selectedDisease === "mastitis" || selectedDisease === "both") {
+        const mastitisTextResult = currentResults.mastitis_text_result || currentResults.text_result;
+        const mastitisTextConfidence = currentResults.mastitis_text_confidence || currentResults.text_confidence;
+        const mastitisImageResult = currentResults.mastitis_image_result || currentResults.image_result;
+        const mastitisImageConfidence = currentResults.mastitis_image_confidence || currentResults.image_confidence;
+        const mastitisCombinedResult = currentResults.mastitis_combined_result || currentResults.combined_result;
+        const mastitisCombinedConfidence = currentResults.mastitis_combined_confidence || currentResults.combined_confidence;
+
+        if (mastitisTextResult) {
+          yPos = addResultSection(doc, 'Mastitis Text Analysis', mastitisTextResult, mastitisTextConfidence, yPos);
           yPos += 8;
         }
-        if (currentResults.image_result) {
-          yPos = addResultSection(doc, 'Image Analysis', currentResults.image_result, currentResults.image_confidence, yPos);
+        if (mastitisImageResult) {
+          yPos = addResultSection(doc, 'Mastitis Image Analysis', mastitisImageResult, mastitisImageConfidence, yPos);
           yPos += 8;
         }
-        if (currentResults.text_result && currentResults.image_result) {
-          const combinedProb = (currentResults.text_confidence + currentResults.image_confidence) / 2;
-          const combinedResult = combinedProb > 0.5 ? 'Mastitis Detected' : 'No Mastitis';
-          
+        if (mastitisCombinedResult) {
           doc.setFontSize(14);
           doc.setFont('helvetica', 'bold');
-          doc.text('FINAL DIAGNOSIS:', 20, yPos);
+          doc.text('MASTITIS FINAL DIAGNOSIS:', 20, yPos);
           yPos += 8;
           
-          const statusColor = combinedProb > 0.5 ? [200, 0, 0] : [0, 150, 0];
+          const statusColor = mastitisCombinedResult.includes('Infected') || mastitisCombinedResult.includes('Detected') ? [200, 0, 0] : [0, 150, 0];
           doc.setFontSize(12);
           doc.setTextColor(...statusColor);
-          doc.text(`${combinedResult} (${(combinedProb * 100).toFixed(1)}% confidence)`, 25, yPos);
+          doc.text(`${mastitisCombinedResult} (${(mastitisCombinedConfidence * 100).toFixed(1)}% confidence)`, 25, yPos);
           
           doc.setFont('helvetica', 'normal');
           doc.setTextColor(40, 40, 40);
           yPos += 12;
         }
-      } else if (selectedDisease === "fmd") {
-        ['foot_text', 'mouth_text', 'foot_image', 'mouth_image'].forEach(type => {
+      }
+
+      // Handle FMD results
+      if (selectedDisease === "fmd" || selectedDisease === "both") {
+        // Add separator if both diseases
+        if (selectedDisease === "both" && yPos > 200) {
+          doc.addPage();
+          yPos = 20;
+        }
+        
+        const fmdResultTypes = ['foot_text', 'mouth_text', 'foot_image', 'mouth_image', 
+                               'fmd_foot_text', 'fmd_mouth_text', 'fmd_foot_image', 'fmd_mouth_image'];
+        
+        fmdResultTypes.forEach(type => {
           if (currentResults[`${type}_result`]) {
-            const [part] = type.split('_');
-            const title = `${part.charAt(0).toUpperCase() + part.slice(1)} ${type.includes('text') ? 'Symptoms' : 'Image'}`;
+            const parts = type.split('_');
+            const part = parts.length > 2 ? parts[1] : parts[0];
+            const analysisType = parts.length > 2 ? parts[2] : parts[1];
+            const title = `${part.charAt(0).toUpperCase() + part.slice(1)} ${analysisType.charAt(0).toUpperCase() + analysisType.slice(1)} Analysis`;
+            
             yPos = addResultSection(doc, title, currentResults[`${type}_result`], currentResults[`${type}_confidence`], yPos);
             yPos += 8;
           }
         });
         
-        if (currentResults.combined_result) {
+        const fmdCombinedResult = currentResults.fmd_combined_result || currentResults.combined_result;
+        const fmdCombinedConfidence = currentResults.fmd_combined_confidence || currentResults.combined_confidence;
+        
+        if (fmdCombinedResult) {
           doc.setFontSize(14);
           doc.setFont('helvetica', 'bold');
-          doc.setTextColor(0, 0, 0);
-          doc.text('FINAL DIAGNOSIS:', 20, yPos);
+          doc.text('FMD FINAL DIAGNOSIS:', 20, yPos);
           yPos += 8;
           
-          const statusColor = currentResults.combined_result === 'Infected' ? [200, 0, 0] : [0, 150, 0];
+          const statusColor = fmdCombinedResult === 'Infected' ? [200, 0, 0] : [0, 150, 0];
           doc.setFontSize(12);
           doc.setTextColor(...statusColor);
-          doc.text(`${currentResults.combined_result} (${(currentResults.combined_confidence * 100).toFixed(1)}% confidence)`, 25, yPos);
+          doc.text(`${fmdCombinedResult} (${(fmdCombinedConfidence * 100).toFixed(1)}% confidence)`, 25, yPos);
           
           doc.setFont('helvetica', 'normal');
           doc.setTextColor(40, 40, 40);
@@ -751,15 +958,25 @@ for (const input of imageInputs) {
     }
 
     // Footer
-    doc.setFontSize(8);
-    doc.setTextColor(150, 150, 150);
-    doc.text('© 2025 Bovine Health Assistant', 105, 290, { align: 'center' });
+// Footer
+doc.setFontSize(8);
+doc.setTextColor(150, 150, 150);
+
+const disclaimer = 
+  "© 2025 Bovine Health Assistant. This tool is intended for informational and educational purposes only " +
+  "and should not be considered a substitute for professional veterinary advice.";
+
+// Automatically wrap text to fit page width (max ~170mm to avoid margins)
+const wrappedDisclaimer = doc.splitTextToSize(disclaimer, 170);
+
+// Place at bottom center
+doc.text(wrappedDisclaimer, doc.internal.pageSize.width / 2, 285, { align: 'center' });
 
     // Save PDF
     const cleanDiseaseName = diseaseName.replace(/ /g, '_').toLowerCase();
     doc.save(`bovine_${cleanDiseaseName}_report_${new Date().toISOString().slice(0,10)}.pdf`);
 
-  }  catch (error) {
+  } catch (error) {
     console.error('PDF Generation Error:', error);
     alert(await i18next.t('errors.pdf_generation'));
   } finally {

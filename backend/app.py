@@ -11,9 +11,9 @@ import pandas as pd
 import google.generativeai as genai
 from sklearn.preprocessing import StandardScaler
 scaler = StandardScaler()
+
 # Configure Gemini API
-#GOOGLE_API_KEY = "AIzaSyBxLKlJGn9K-sHeBMdxjJ5MEycNXpd3jYc"
-genai.configure(api_key="AIzaSyC35sQNpirJ-i0TumT3mk2EFoHdCZLpSU0")  # <-- Replace with your API key
+genai.configure(api_key="AIzaSyC35sQNpirJ-i0TumT3mk2EFoHdCZLpSU0")
 
 chat_model = genai.GenerativeModel(
     model_name="gemini-1.5-flash",
@@ -43,7 +43,6 @@ You are a veterinary assistant chatbot answering all queries of farmers related 
   "Sorry, I only help with Mastitis and FMD in cows."
 Use short, simple answers suitable for rural farmers.
 """
-
 
 app = Flask(__name__)
 CORS(app)
@@ -78,6 +77,7 @@ def preprocess_image(img_path):
 def predict_mastitis():
     input_types = request.form.getlist('inputTypes[]')
     response = {}
+    mastitis_probs = []
 
     if 'text' in input_types:
         try:
@@ -89,9 +89,10 @@ def predict_mastitis():
                 float(request.form['mastitis_milk_color'])
             ]
             scaled = mastitis_scaler.transform([features])
-            text_result = mastitis_text_model.predict(scaled)[0]
-            response['text_result'] = 'Mastitis Detected' if text_result == 1 else 'No Mastitis'
-            response['text_confidence'] = float(max(mastitis_text_model.predict_proba(scaled)[0]))
+            prob = max(mastitis_text_model.predict_proba(scaled)[0])
+            mastitis_probs.append(prob)
+            response['text_result'] = 'Mastitis Detected' if mastitis_text_model.predict(scaled)[0] == 1 else 'No Mastitis'
+            response['text_confidence'] = float(prob)
         except Exception as e:
             response['text_error'] = str(e)
 
@@ -103,11 +104,18 @@ def predict_mastitis():
             temp.close()
             processed = preprocess_image(temp.name)
             if processed is not None:
-                prediction = mastitis_image_model.predict(processed)[0][0]
-                response['image_result'] = 'Infected' if prediction > 0.5 else 'Non-infected'
-                response['image_confidence'] = float(prediction if prediction > 0.5 else 1 - prediction)
+                prob = float(mastitis_image_model.predict(processed)[0][0])
+                mastitis_probs.append(prob)
+                response['image_result'] = 'Infected' if prob > 0.5 else 'Non-infected'
+                response['image_confidence'] = float(prob if prob > 0.5 else 1 - prob)
         finally:
             os.unlink(temp.name)
+
+    # Calculate combined prediction if both text and image results are available
+    if len(mastitis_probs) > 1:
+        avg_prob = sum(mastitis_probs) / len(mastitis_probs)
+        response['combined_result'] = 'Mastitis Detected' if avg_prob > 0.5 else 'No Mastitis'
+        response['combined_confidence'] = float(avg_prob if avg_prob > 0.5 else 1 - avg_prob)
 
     return jsonify(response)
 
@@ -197,6 +205,178 @@ def predict_fmd():
 
     return jsonify(response)
 
+@app.route('/predict/both', methods=['POST'])
+def predict_both():
+    input_types = request.form.getlist('inputTypes[]')
+    response = {}
+    
+    # Process Mastitis inputs
+    mastitis_probs = []
+    
+    if 'mastitis_text' in input_types:
+        try:
+            # Check if all required mastitis text fields are present
+            required_fields = ['mastitis_temperature', 'mastitis_hardness', 'mastitis_pain', 
+                              'mastitis_milk_yield', 'mastitis_milk_color']
+            if all(field in request.form for field in required_fields):
+                features = [
+                    float(request.form['mastitis_temperature']),
+                    float(request.form['mastitis_hardness']),
+                    float(request.form['mastitis_pain']),
+                    float(request.form['mastitis_milk_yield']),
+                    float(request.form['mastitis_milk_color'])
+                ]
+                scaled = mastitis_scaler.transform([features])
+                prob = max(mastitis_text_model.predict_proba(scaled)[0])
+                mastitis_probs.append(prob)
+                response['mastitis_text_result'] = 'Mastitis Detected' if mastitis_text_model.predict(scaled)[0] == 1 else 'No Mastitis'
+                response['mastitis_text_confidence'] = float(prob)
+            else:
+                response['mastitis_text_error'] = 'Missing required text fields for mastitis'
+        except Exception as e:
+            response['mastitis_text_error'] = str(e)
+
+    if 'mastitis_image' in input_types and 'udderImage' in request.files:
+        image_file = request.files['udderImage']
+        if image_file and image_file.filename:  # Check if file was actually uploaded
+            temp = tempfile.NamedTemporaryFile(delete=False, suffix='.jpg')
+            try:
+                image_file.save(temp.name)
+                temp.close()
+                processed = preprocess_image(temp.name)
+                if processed is not None:
+                    prob = float(mastitis_image_model.predict(processed)[0][0])
+                    mastitis_probs.append(prob)
+                    response['mastitis_image_result'] = 'Infected' if prob > 0.5 else 'Non-infected'
+                    response['mastitis_image_confidence'] = float(prob if prob > 0.5 else 1 - prob)
+            except Exception as e:
+                response['mastitis_image_error'] = str(e)
+            finally:
+                os.unlink(temp.name)
+        else:
+            response['mastitis_image_error'] = 'No udder image provided'
+
+    # Calculate combined mastitis prediction
+    if mastitis_probs:
+        avg_mastitis_prob = sum(mastitis_probs) / len(mastitis_probs)
+        response['mastitis_combined_result'] = 'Mastitis Detected' if avg_mastitis_prob > 0.5 else 'No Mastitis'
+        response['mastitis_combined_confidence'] = float(avg_mastitis_prob if avg_mastitis_prob > 0.5 else 1 - avg_mastitis_prob)
+
+    # Process FMD inputs
+    foot_probs = []
+    mouth_probs = []
+
+    # Process FMD text inputs
+    if 'fmd_text_foot' in input_types:
+        try:
+            # Check if all required FMD foot text fields are present
+            required_fields = [
+                'fmd_foot_text_temperature', 'fmd_foot_text_milk_production', 
+                'fmd_foot_text_lethargy', 'fmd_foot_text_difficulty_walking',
+                'fmd_foot_text_foot_blister', 'fmd_foot_text_foot_swelling',
+                'fmd_foot_text_hoof_detachment'
+            ]
+            if all(field in request.form for field in required_fields):
+                foot_features = [
+                    float(request.form['fmd_foot_text_temperature']),
+                    float(request.form['fmd_foot_text_milk_production']),
+                    float(request.form['fmd_foot_text_lethargy']),
+                    float(request.form['fmd_foot_text_difficulty_walking']),
+                    float(request.form['fmd_foot_text_foot_blister']),
+                    float(request.form['fmd_foot_text_foot_swelling']),
+                    float(request.form['fmd_foot_text_hoof_detachment'])
+                ]
+                scaled = foot_scaler.transform([foot_features])
+                prob = foot_clf.predict_proba(scaled)[0][1]
+                foot_probs.append(prob)
+                response['fmd_foot_text_result'] = 'Infected' if prob > 0.5 else 'Healthy'
+                response['fmd_foot_text_confidence'] = float(prob if prob > 0.5 else 1 - prob)
+            else:
+                response['fmd_foot_text_error'] = 'Missing required text fields for foot symptoms'
+        except Exception as e:
+            response['fmd_foot_text_error'] = str(e)
+
+    if 'fmd_text_mouth' in input_types:
+        try:
+            # Check if all required FMD mouth text fields are present
+            required_fields = [
+                'fmd_mouth_text_temperature', 'fmd_mouth_text_milk_production',
+                'fmd_mouth_text_lethargy', 'fmd_mouth_text_mouth_ulcers',
+                'fmd_mouth_text_mouth_blister', 'fmd_mouth_text_salivation',
+                'fmd_mouth_text_nasal_discharge'
+            ]
+            if all(field in request.form for field in required_fields):
+                mouth_features = [
+                    float(request.form['fmd_mouth_text_temperature']),
+                    float(request.form['fmd_mouth_text_milk_production']),
+                    float(request.form['fmd_mouth_text_lethargy']),
+                    float(request.form['fmd_mouth_text_mouth_ulcers']),
+                    float(request.form['fmd_mouth_text_mouth_blister']),
+                    float(request.form['fmd_mouth_text_salivation']),
+                    float(request.form['fmd_mouth_text_nasal_discharge'])
+                ]
+                scaled = mouth_scaler.transform([mouth_features])
+                prob = mouth_clf.predict_proba(scaled)[0][1]
+                mouth_probs.append(prob)
+                response['fmd_mouth_text_result'] = 'Infected' if prob > 0.5 else 'Healthy'
+                response['fmd_mouth_text_confidence'] = float(prob if prob > 0.5 else 1 - prob)
+            else:
+                response['fmd_mouth_text_error'] = 'Missing required text fields for mouth symptoms'
+        except Exception as e:
+            response['fmd_mouth_text_error'] = str(e)
+
+    # Process FMD image inputs
+    if 'fmd_image_foot' in input_types and 'fmd_footImage' in request.files:
+        image_file = request.files['fmd_footImage']
+        if image_file and image_file.filename:  # Check if file was actually uploaded
+            temp = tempfile.NamedTemporaryFile(delete=False, suffix='.jpg')
+            try:
+                image_file.save(temp.name)
+                temp.close()
+                processed = preprocess_image(temp.name)
+                if processed is not None:
+                    prob = float(foot_cnn.predict(processed)[0][0])
+                    foot_probs.append(prob)
+                    response['fmd_foot_image_result'] = 'Infected' if prob > 0.5 else 'Healthy'
+                    response['fmd_foot_image_confidence'] = float(prob if prob > 0.5 else 1 - prob)
+            except Exception as e:
+                response['fmd_foot_image_error'] = str(e)
+            finally:
+                os.unlink(temp.name)
+        else:
+            response['fmd_foot_image_error'] = 'No foot image provided'
+
+    if 'fmd_image_mouth' in input_types and 'fmd_mouthImage' in request.files:
+        image_file = request.files['fmd_mouthImage']
+        if image_file and image_file.filename:  # Check if file was actually uploaded
+            temp = tempfile.NamedTemporaryFile(delete=False, suffix='.jpg')
+            try:
+                image_file.save(temp.name)
+                temp.close()
+                processed = preprocess_image(temp.name)
+                if processed is not None:
+                    prob = float(mouth_cnn.predict(processed)[0][0])
+                    mouth_probs.append(prob)
+                    response['fmd_mouth_image_result'] = 'Infected' if prob > 0.5 else 'Healthy'
+                    response['fmd_mouth_image_confidence'] = float(prob if prob > 0.5 else 1 - prob)
+            except Exception as e:
+                response['fmd_mouth_image_error'] = str(e)
+            finally:
+                os.unlink(temp.name)
+        else:
+            response['fmd_mouth_image_error'] = 'No mouth image provided'
+
+    # Calculate combined FMD prediction
+    fmd_probs = foot_probs + mouth_probs
+    if fmd_probs:
+        avg_prob = sum(fmd_probs) / len(fmd_probs)
+        response['fmd_combined_result'] = 'Infected' if avg_prob > 0.5 else 'Healthy'
+        response['fmd_combined_confidence'] = float(avg_prob if avg_prob > 0.5 else 1 - avg_prob)
+    elif any(key.startswith('fmd_') and key.endswith('_error') for key in response.keys()):
+        # If there are FMD errors but no successful results
+        response['fmd_combined_error'] = 'FMD analysis failed due to missing or invalid inputs'
+
+    return jsonify(response)
 @app.route('/chat', methods=['POST'])
 def chat():
     try:
@@ -216,9 +396,6 @@ def chat():
             else:
                 reply = "📍 Please allow location access so I can suggest nearby vets."
             return jsonify({"response": reply})
-
-        # if not message:
-        #     return jsonify({"response": "❌ Please enter a message."})
 
         prompt = f""" {system_instructions} You are a veterinary assistant. Answer briefly (5-6 sentences). Help dairy farmers by explaining or advising about Mastitis or Foot and Mouth Disease (FMD) in cows.\n\nUser: {message}\nAssistant:"""
 
@@ -241,20 +418,6 @@ def chat():
             "response": "⚠️ Something went wrong while generating a response.",
             "error": str(e)
         }), 500
-
-
-
-# @app.route('/run_chatbot', methods=['POST'])
-# def run_chatbot():
-#     try:
-#         # Execute the chatbot.py script and capture output
-#         result = subprocess.run(['python', 'chatbot.py'], capture_output=True, text=True, check=True)
-#         chatbot_output = result.stdout
-#         return jsonify({'chatbot_output': chatbot_output})
-#     except subprocess.CalledProcessError as e:
-#         return jsonify({'error': f'Error running chatbot script: {e.stderr}'}), 500
-#     except Exception as e:
-#         return jsonify({'error': f'An unexpected error occurred: {str(e)}'}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

@@ -29,6 +29,7 @@
         <option value="">--<span data-i18n="select">Select</span>--</option>
         <option value="mastitis" data-i18n="mastitis">Mastitis</option>
         <option value="fmd" data-i18n="fmd">Foot & Mouth Disease (FMD)</option>
+        <option value="both" data-i18n="both">Both Mastitis & FMD</option>
       </select>
       <div class="button-group">
         <button onclick="goToStep2()" data-i18n="next">Next</button>
@@ -58,6 +59,23 @@
           <label><input type="checkbox" name="fmdImageInput" value="mouth"> <span data-i18n="mouth_image">Mouth Image</span></label>
         </div>
       </div>
+      
+      <div id="both-options" class="hidden">
+        <h3 data-i18n="mastitis">Mastitis</h3>
+        <div class="checkbox-group">
+          <label><input type="checkbox" name="bothMastitisInput" value="text"> <span data-i18n="text_data">Text Data</span></label>
+          <label><input type="checkbox" name="bothMastitisInput" value="image"> <span data-i18n="udder_image">Udder Image</span></label>
+        </div>
+        
+        <h3 data-i18n="fmd">Foot & Mouth Disease (FMD)</h3>
+        <div class="checkbox-group">
+          <label><input type="checkbox" name="bothFMDTextInput" value="foot"> <span data-i18n="foot_symptoms">Foot Symptoms</span></label>
+          <label><input type="checkbox" name="bothFMDTextInput" value="mouth"> <span data-i18n="mouth_symptoms">Mouth Symptoms</span></label>
+          <label><input type="checkbox" name="bothFMDImageInput" value="foot"> <span data-i18n="foot_image">Foot Image</span></label>
+          <label><input type="checkbox" name="bothFMDImageInput" value="mouth"> <span data-i18n="mouth_image">Mouth Image</span></label>
+        </div>
+      </div>
+      
       <div class="button-group">
         <button onclick="goBackToStep1()" data-i18n="back">Back</button>
         <button onclick="goToStep3()" data-i18n="next">Next</button>
@@ -101,21 +119,21 @@
     </div>
   </div>
 
-<div class="language-switcher-container">
-  <span class="language-icon">🌐</span>
-  <select id="languageSwitcher">
-    <option value="en">English</option>
-    <option value="hi">हिंदी</option>
-    <option value="kn">ಕನ್ನಡ</option>
-  </select>
-</div>
+  <div class="language-switcher-container">
+    <span class="language-icon">🌐</span>
+    <select id="languageSwitcher">
+      <option value="en">English</option>
+      <option value="hi">हिंदी</option>
+      <option value="kn">ಕನ್ನಡ</option>
+    </select>
+  </div>
+  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script>
-  // Make jsPDF available globally
-  window.jsPDF = window.jspdf.jsPDF;
-</script>
+  <script>
+    // Make jsPDF available globally
+    window.jsPDF = window.jspdf.jsPDF;
+  </script>
   <script src="script.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </body>
 </html>
