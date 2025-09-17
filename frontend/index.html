@@ -11,126 +11,192 @@
   <script src="/js/i18n-setup.js"></script>
 </head>
 <body>
-  <header class="main-header">
-    <div class="header-content">
-      <h1 id="title" data-i18n="title">Bovine Disease Detection System</h1>
-      <p class="subtitle" id="subtitle" data-i18n="subtitle">FMD & Mastitis Analysis</p>
-    </div>
-    <div class="header-image">
-      <img id="site-logo" src="logo.png" alt="Veterinary Icon" class="logo">
-    </div>
-  </header>
+  <div id="app-container">
+    <header class="main-header">
+      <div class="header-content">
+        <h1 id="title" data-i18n="title">Bovine Disease Detection System</h1>
+        <p class="subtitle" id="subtitle" data-i18n="subtitle">FMD & Mastitis Analysis</p>
+      </div>
+      <div class="header-image">
+        <img id="site-logo" src="logo.png" alt="Veterinary Icon" class="logo">
+      </div>
+    </header>
 
-  <div class="container">
-    <!-- Step 1: Disease Selection -->
-    <div id="step1" class="step">
-      <h2 data-i18n="select_disease">Select Disease</h2>
-      <select id="disease">
-        <option value="">--<span data-i18n="select">Select</span>--</option>
-        <option value="mastitis" data-i18n="mastitis">Mastitis</option>
-        <option value="fmd" data-i18n="fmd">Foot & Mouth Disease (FMD)</option>
-        <option value="both" data-i18n="both">Both Mastitis & FMD</option>
-      </select>
-      <div class="button-group">
-        <button onclick="goToStep2()" data-i18n="next">Next</button>
-      </div>
-    </div>
-
-    <!-- Step 2: Input Type Selection -->
-    <div id="step2" class="step hidden">
-      <h2 data-i18n="select_input">Select Input Types</h2>
-      <div id="mastitis-options" class="hidden">
-        <div class="checkbox-group">
-          <label><input type="checkbox" name="mastitisInput" value="text"> <span data-i18n="text_data">Text Data</span></label>
-          <label><input type="checkbox" name="mastitisInput" value="image"> <span data-i18n="udder_image">Udder Image</span></label>
-        </div>
-      </div>
-
-      <div id="fmd-options" class="hidden">
-        <h3 data-i18n="text_data">Text Data</h3>
-        <div class="checkbox-group">
-          <label><input type="checkbox" name="fmdTextInput" value="foot"> <span data-i18n="foot_symptoms">Foot Symptoms</span></label>
-          <label><input type="checkbox" name="fmdTextInput" value="mouth"> <span data-i18n="mouth_symptoms">Mouth Symptoms</span></label>
-        </div>
-        
-        <h3 data-i18n="images">Images</h3>
-        <div class="checkbox-group">
-          <label><input type="checkbox" name="fmdImageInput" value="foot"> <span data-i18n="foot_image">Foot Image</span></label>
-          <label><input type="checkbox" name="fmdImageInput" value="mouth"> <span data-i18n="mouth_image">Mouth Image</span></label>
-        </div>
-      </div>
-      
-      <div id="both-options" class="hidden">
-        <h3 data-i18n="mastitis">Mastitis</h3>
-        <div class="checkbox-group">
-          <label><input type="checkbox" name="bothMastitisInput" value="text"> <span data-i18n="text_data">Text Data</span></label>
-          <label><input type="checkbox" name="bothMastitisInput" value="image"> <span data-i18n="udder_image">Udder Image</span></label>
-        </div>
-        
-        <h3 data-i18n="fmd">Foot & Mouth Disease (FMD)</h3>
-        <div class="checkbox-group">
-          <label><input type="checkbox" name="bothFMDTextInput" value="foot"> <span data-i18n="foot_symptoms">Foot Symptoms</span></label>
-          <label><input type="checkbox" name="bothFMDTextInput" value="mouth"> <span data-i18n="mouth_symptoms">Mouth Symptoms</span></label>
-          <label><input type="checkbox" name="bothFMDImageInput" value="foot"> <span data-i18n="foot_image">Foot Image</span></label>
-          <label><input type="checkbox" name="bothFMDImageInput" value="mouth"> <span data-i18n="mouth_image">Mouth Image</span></label>
-        </div>
-      </div>
-      
-      <div class="button-group">
-        <button onclick="goBackToStep1()" data-i18n="back">Back</button>
-        <button onclick="goToStep3()" data-i18n="next">Next</button>
-      </div>
-    </div>
-
-    <!-- Step 3: Data Entry -->
-    <div id="step3" class="step hidden">
-      <h2 data-i18n="provide_input">Provide Input</h2>
-      <form id="inputForm">
-        <div id="textFields"></div>
-        <div id="imageFields"></div>
+    <div class="container">
+      <div id="step1" class="step">
+        <h2 data-i18n="select_disease">Select Disease</h2>
+        <select id="disease">
+          <option value="">--<span data-i18n="select">Select</span>--</option>
+          <option value="mastitis" data-i18n="mastitis">Mastitis</option>
+          <option value="fmd" data-i18n="fmd">Foot & Mouth Disease (FMD)</option>
+          <option value="both" data-i18n="both">Both Mastitis & FMD</option>
+        </select>
         <div class="button-group">
-          <button type="button" onclick="goBackToStep2()" data-i18n="back">Back</button>
-          <button type="submit" class="predict-button" data-i18n="predict">Predict</button>
+          <button onclick="goToStep2()" data-i18n="next">Next</button>
         </div>
-      </form>
-    </div>
+      </div>
 
-    <!-- Step 4: Results -->
-    <div id="step4" class="step hidden">
-      <h2 data-i18n="prediction_results">Prediction Results</h2>
-      <div id="resultDisplay"></div>
-      <div class="button-group">
-        <button onclick="goBackToStep3()" data-i18n="back">Back</button>
-        <button onclick="restartProcess()" data-i18n="new_prediction">Start New Prediction</button>
-        <button id="downloadBtn" onclick="generatePDF()" data-i18n="download_report">Download Report</button>
+      <div id="step2" class="step hidden">
+        <h2 data-i18n="select_input">Select Input Types</h2>
+        <div id="mastitis-options" class="hidden">
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="mastitisInput" value="text"> <span data-i18n="text_data">Text Data</span></label>
+            <label><input type="checkbox" name="mastitisInput" value="image"> <span data-i18n="udder_image">Udder Image</span></label>
+          </div>
+        </div>
+
+        <div id="fmd-options" class="hidden">
+          <h3 data-i18n="text_data">Text Data</h3>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="fmdTextInput" value="foot"> <span data-i18n="foot_symptoms">Foot Symptoms</span></label>
+            <label><input type="checkbox" name="fmdTextInput" value="mouth"> <span data-i18n="mouth_symptoms">Mouth Symptoms</span></label>
+          </div>
+          
+          <h3 data-i18n="images">Images</h3>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="fmdImageInput" value="foot"> <span data-i18n="foot_image">Foot Image</span></label>
+            <label><input type="checkbox" name="fmdImageInput" value="mouth"> <span data-i18n="mouth_image">Mouth Image</span></label>
+          </div>
+        </div>
+        
+        <div id="both-options" class="hidden">
+          <h3 data-i18n="mastitis">Mastitis</h3>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="bothMastitisInput" value="text"> <span data-i18n="text_data">Text Data</span></label>
+            <label><input type="checkbox" name="bothMastitisInput" value="image"> <span data-i18n="udder_image">Udder Image</span></label>
+          </div>
+          
+          <h3 data-i18n="fmd">Foot & Mouth Disease (FMD)</h3>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="bothFMDTextInput" value="foot"> <span data-i18n="foot_symptoms">Foot Symptoms</span></label>
+            <label><input type="checkbox" name="bothFMDTextInput" value="mouth"> <span data-i18n="mouth_symptoms">Mouth Symptoms</span></label>
+            <label><input type="checkbox" name="bothFMDImageInput" value="foot"> <span data-i18n="foot_image">Foot Image</span></label>
+            <label><input type="checkbox" name="bothFMDImageInput" value="mouth"> <span data-i18n="mouth_image">Mouth Image</span></label>
+          </div>
+        </div>
+        
+        <div class="button-group">
+          <button onclick="goBackToStep1()" data-i18n="back">Back</button>
+          <button onclick="goToStep3()" data-i18n="next">Next</button>
+        </div>
+      </div>
+
+      <div id="step3" class="step hidden">
+        <h2 data-i18n="provide_input">Provide Input</h2>
+        <form id="inputForm">
+          <div id="textFields"></div>
+          <div id="imageFields"></div>
+          <div class="button-group">
+            <button type="button" onclick="goBackToStep2()" data-i18n="back">Back</button>
+            <button type="submit" class="predict-button" data-i18n="predict">Predict</button>
+          </div>
+        </form>
+      </div>
+
+      <div id="step4" class="step hidden">
+        <h2 data-i18n="prediction_results">Prediction Results</h2>
+        <div id="resultDisplay"></div>
+        <div class="button-group">
+          <button onclick="goBackToStep3()" data-i18n="back">Back</button>
+          <button onclick="restartProcess()" data-i18n="new_prediction">Start New Prediction</button>
+          <button id="downloadBtn" onclick="generatePDF()" data-i18n="download_report">Download Report</button>
+        </div>
       </div>
     </div>
   </div>
-  
-  <div class="chatbot-container">
-    <button class="chatbot-toggle" onclick="toggleChatbot()" data-i18n="chatbot">Chatbot</button>
-    <div class="chatbot" id="chatbot">
-      <div class="chatbot-header" data-i18n="chatbot_title">Ask About Mastitis or FMD</div>
-      <div class="chatbot-messages" id="chatbot-messages"></div>
-      <div class="chatbot-input">
-        <input type="text" id="chatbot-input" placeholder="Type your question here" data-i18n="chatbot_placeholder">
-        <button onclick="sendChatbotMessage()" data-i18n="send">Send</button>
+
+  <div id="about-container" class="hidden">
+    <div class="about-header">
+      <h1 data-i18n="about_title">About Bovine Disease Detection System</h1>
+      <button onclick="showMainPage()" class="back-button" data-i18n="back_to_main">Back to Main</button>
+    </div>
+    
+    <div class="about-content">
+      <div class="disease-tabs">
+        <button class="tab-link active" onclick="openTab(event, 'MastitisTab')" data-i18n="mastitis">Mastitis</button>
+        <button class="tab-link" onclick="openTab(event, 'FMDTab')" data-i18n="fmd">Foot & Mouth Disease</button>
+        <button class="tab-link" onclick="openTab(event, 'SystemTab')" data-i18n="system_info">System Information</button>
+      </div>
+      
+      <div id="MastitisTab" class="tab-content active">
+        <div class="disease-content">
+          <div class="disease-image">
+            <img src="i2.jpg" alt="Mastitis Information">
+          </div>
+          <div class="disease-text">
+            <h3 data-i18n="mastitis">Mastitis</h3>
+            <p data-i18n="mastitis_info">
+              Mastitis directly damages the udder tissue in cows, causing swelling, heat, and pain in one or more quarters of the udder. This infection alters milk composition—making it watery, clotted, or even bloody—and reduces overall milk yield and quality. The cow often feels discomfort during milking, eats less due to stress, and may show fever in severe cases. Subclinical mastitis, though invisible, quietly reduces milk production and weakens the cow's immune system. Over time, repeated infections can cause permanent udder damage, making the cow less productive or even unfit for dairy use.
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      <div id="FMDTab" class="tab-content">
+        <div class="disease-content">
+          <div class="disease-image">
+            <img src="i3.jpg" alt="FMD Information">
+          </div>
+          <div class="disease-text">
+            <h3 data-i18n="fmd">Foot & Mouth Disease</h3>
+            <p data-i18n="fmd_info">
+              FMD causes high fever and painful blisters in the mouth, tongue, gums, feet, and teats of cows. These blisters rupture and turn into ulcers, making it hard for the cow to chew, swallow, or walk. As a result, affected cows drool excessively, refuse to eat, and may become lame. Teat lesions are especially harmful in dairy cows because they reduce milk production and make milking painful. In calves, FMD can be fatal due to heart damage. Even after recovery, cows may remain weak, produce less milk, and take a long time to regain normal productivity, leading to major economic loss.
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      <div id="SystemTab" class="tab-content">
+        <div class="system-content">
+          <div class="system-image">
+            <img src="i1.jpg" alt="System Accuracy Information">
+          </div>
+          <div class="system-text">
+            <h3 data-i18n="system_info">System Information</h3>
+            <p data-i18n="system_description">
+              Our AI-powered system uses a hybrid approach combining symptom-based analysis with image recognition to detect FMD and Mastitis in cattle. The system employs multiple machine learning models with high accuracy rates for early detection of these diseases.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="language-switcher-container">
-    <span class="language-icon">🌐</span>
-    <select id="languageSwitcher">
-      <option value="en">English</option>
-      <option value="hi">हिंदी</option>
-      <option value="kn">ಕನ್ನಡ</option>
-    </select>
+  <div class="control-buttons">
+    <div class="control-button language-switcher-container">
+      <span class="control-icon">🌐</span>
+      <select id="languageSwitcher">
+        <option value="en">English</option>
+        <option value="hi">हिंदी</option>
+        <option value="kn">ಕನ್ನಡ</option>
+      </select>
+    </div>
+    
+    <div class="control-button about-us-container">
+      <button onclick="showAboutPage()" data-i18n="about_us">
+        <span class="control-icon">ℹ️</span>
+        <span class="control-text">About Us</span>
+      </button>
+    </div>
+    
+    <div class="chatbot-container">
+      <button class="chatbot-toggle" onclick="toggleChatbot()" data-i18n="chatbot">
+        <span class="control-icon">💬</span>
+        <span class="control-text">Chatbot</span>
+      </button>
+      <div class="chatbot" id="chatbot">
+        <div class="chatbot-header" data-i18n="chatbot_title">Ask About Mastitis or FMD</div>
+        <div class="chatbot-messages" id="chatbot-messages"></div>
+        <div class="chatbot-input">
+          <input type="text" id="chatbot-input" placeholder="Type your question here" data-i18n="chatbot_placeholder">
+          <button onclick="sendChatbotMessage()" data-i18n="send">Send</button>
+        </div>
+      </div>
+    </div>
   </div>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
-    // Make jsPDF available globally
     window.jsPDF = window.jspdf.jsPDF;
   </script>
   <script src="script.js"></script>

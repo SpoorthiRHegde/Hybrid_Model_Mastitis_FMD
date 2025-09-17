@@ -106,6 +106,12 @@
     "foot_symptoms": "Foot Symptoms",
     "mouth_symptoms": "Mouth Symptoms"
   },
+  "about_us": "About Us",
+  "disease_information": "Disease Information",
+  "system_info": "System Information",
+  "mastitis_info": "Mastitis directly damages the udder tissue in cows, causing swelling, heat, and pain in one or more quarters of the udder. This infection alters milk composition—making it watery, clotted, or even bloody—and reduces overall milk yield and quality. The cow often feels discomfort during milking, eats less due to stress, and may show fever in severe cases. Subclinical mastitis, though invisible, quietly reduces milk production and weakens the cow's immune system. Over time, repeated infections can cause permanent udder damage, making the cow less productive or even unfit for dairy use.",
+  "fmd_info": "FMD causes high fever and painful blisters in the mouth, tongue, gums, feet, and teats of cows. These blisters rupture and turn into ulcers, making it hard for the cow to chew, swallow, or walk. As a result, affected cows drool excessively, refuse to eat, and may become lame. Teat lesions are especially harmful in dairy cows because they reduce milk production and make milking painful. In calves, FMD can be fatal due to heart damage. Even after recovery, cows may remain weak, produce less milk, and take a long time to regain normal productivity, leading to major economic loss.",
+  "system_description": "Our AI-powered system uses a hybrid approach combining symptom-based analysis with image recognition to detect FMD and Mastitis in cattle. The system employs multiple machine learning models with high accuracy rates for early detection of these diseases.",
   "results": {
     "results": "Results",
     "disease": "Disease",
