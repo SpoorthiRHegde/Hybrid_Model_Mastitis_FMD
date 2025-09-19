@@ -13,6 +13,117 @@
   --control-hover: #f8f9fa;
 }
 
+/* Base Styles */
+* {
+  box-sizing: border-box;
+}
+
+input[name*="temperature"] {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 1rem;
+  padding: 14px;
+  margin: 10px 0;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  width: 100%;
+  transition: all 0.3s;
+  background-color: white;
+}
+
+input[name*="temperature"]:focus {
+  border-color: var(--secondary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+.back-button {
+  background-color: #e74c3c; /* Red color */
+  color: white;
+  border: none;
+  padding: 12px;
+  /* border-radius: 50%; Makes it circular */
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1.2rem;
+  transition: all 0.3s;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px; /* Fixed size */
+  height: 40px; /* Fixed size */
+  max-width: 40px;
+  white-space: nowrap;
+  position: relative;
+}
+
+/* Create the X shape using pseudo-elements */
+.back-button::before,
+.back-button::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 2px;
+  background-color: white;
+}
+
+.back-button::before {
+  transform: rotate(45deg);
+}
+
+.back-button::after {
+  transform: rotate(-45deg);
+}
+
+/* Remove any text content */
+.back-button .control-text {
+  display: none;
+}
+
+.back-button:hover {
+  background-color: #c0392b; /* Darker red on hover */
+  transform: translateY(-2px) scale(1.1);
+  box-shadow: 0 5px 12px rgba(0,0,0,0.2);
+}
+
+.back-button:active {
+  transform: translateY(0) scale(1);
+}
+
+.chatbot.visible {
+  display: flex !important;
+}
+
+.chatbot.hidden {
+  display: none !important;
+}
+
+/* Ensure control buttons are always visible */
+.control-buttons {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 1000;
+}
+
+/* Fix about page container visibility */
+#about-container {
+  display: block;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding-bottom: 2rem;
+}
+
+#about-container.hidden {
+  display: none !important;
+}
+
+#app-container.hidden {
+  display: none !important;
+}
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
@@ -20,8 +131,10 @@ body {
   padding: 0;
   min-height: 100vh;
   color: var(--dark);
+  line-height: 1.6;
 }
 
+/* Header Styles */
 .main-header {
   background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
   color: white;
@@ -80,6 +193,36 @@ body {
   to { transform: scale(1.05); }
 }
 
+.instruction-steps {
+  counter-reset: instruction-step;
+}
+
+.instruction-steps li {
+  counter-increment: instruction-step;
+  position: relative;
+  padding-left: 40px;
+  margin-bottom: 20px;
+  min-height: 30px;
+}
+
+.instruction-steps li::before {
+  content: counter(instruction-step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 30px;
+  height: 30px;
+  background: var(--secondary);
+  color: white;
+  border-radius: 6px; /* Changed from circle to rounded square */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
 .logo {
   width: 90px;
   height: 90px;
@@ -87,25 +230,7 @@ body {
   filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
 }
 
-.about-header {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-  color: white;
-  padding: 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-}
-
-.about-content {
-  max-width: 1200px;
-  margin: 2rem auto;
-  padding: 2rem;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-}
-
+/* Container Styles */
 .container {
   max-width: 900px;
   margin: 2rem auto;
@@ -118,6 +243,7 @@ body {
   transform: translateY(-30px);
 }
 
+/* Step Navigation */
 .step {
   display: block;
   margin-bottom: 2rem;
@@ -130,204 +256,10 @@ body {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
-.control-buttons {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  z-index: 1000;
-}
-
-.control-button {
-  display: flex;
-  align-items: center;
-  background: var(--control-bg);
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  overflow: hidden;
-}
-
-.control-button:hover {
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-  transform: translateY(-2px);
-}
-
-.control-icon {
-  font-size: 1.2rem;
-  padding: 10px;
-  background: var(--secondary);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 40px;
-}
-
-.control-text {
-  padding: 0 12px;
-  white-space: nowrap;
-}
-
-.language-switcher-container select {
-  border: none;
-  padding: 10px 12px;
-  background: transparent;
-  color: var(--dark);
-  font-size: 0.9rem;
-  cursor: pointer;
-  outline: none;
-  width: 120px;
-}
-
-.about-us-container button {
-  border: none;
-  background: transparent;
-  padding: 10px 12px;
-  color: var(--dark);
-  font-size: 0.9rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-
-.chatbot-button {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: var(--secondary);
-  color: white;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 24px;
-  cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  z-index: 1000; /* Ensure it's on top */
-  transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.chatbot-button:hover {
-  background-color: #2980b9; /* Darker shade of secondary */
-  transform: scale(1.1);
-}
-
-
-/* Chatbot Container */
-.chatbot-container {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 1000;
-}
-
-/* Chatbot Toggle Button */
-.chatbot-toggle {
-  padding: 10px 15px;
-  background-color: var(--secondary);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 600;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.chatbot-toggle:hover {
-  background-color: #2980b9;
-  transform: translateY(-2px);
-}
-
-/* Chatbot Window */
-.chatbot {
-  display: none; /* Hidden by default */
-  flex-direction: column;
-  width: 500px;
-  height: 400px;
-  background-color: white;
-  border-radius: 12px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  overflow: hidden;
-  margin-top: 10px;
-}
-
-.chatbot-header {
-  background-color: var(--primary);
-  color: white;
-  padding: 15px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  text-align: center;
-}
-
-.chatbot-messages {
-  flex-grow: 1;
-  padding: 15px;
-  overflow-y: auto;
-}
-
-.chatbot-input {
-  display: flex;
-  padding: 15px;
-  border-top: 1px solid #eee;
-}
-
-.chatbot-input input[type="text"] {
-  flex-grow: 1;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  margin-right: 10px;
-  font-size: 1rem;
-}
-.chatbot-messages {
-    max-height: 300px;
-    overflow-y: auto;
-    padding: 10px;
-    background: #f4f4f4;
-    border-radius: 10px;
-    margin-bottom: 10px;
-}
-
-.bubble {
-    padding: 8px 12px;
-    margin: 5px;
-    border-radius: 10px;
-    max-width: 90%;
-}
-
-.bubble a {
-  color: #0a58ca;
-  word-break: break-word;
-  text-decoration: underline;
-}
-
-
-.user {
-    background: #d1e7dd;
-    text-align: right;
-    align-self: flex-end;
-}
-
-.bot {
-    background: #f8d7da;
-    text-align: left;
-    align-self: flex-start;
-}
-/* Hide Google Translate's default widget */
-
-
+/* Form Elements */
 select, input[type="text"], input[type="file"] {
   width: 100%;
   padding: 14px;
@@ -345,6 +277,33 @@ select:focus, input[type="text"]:focus {
   box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
 }
 
+.checkbox-group {
+  margin: 1.5rem 0;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+  padding: 14px;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.checkbox-group label:hover {
+  background: #f8f9fa;
+  transform: translateX(5px);
+}
+
+.checkbox-group input {
+  margin-right: 12px;
+  transform: scale(1.2);
+}
+
+/* Buttons */
 .button-group {
   display: flex;
   justify-content: space-between;
@@ -389,123 +348,171 @@ button:active {
   transform: translateY(-2px) scale(1.02);
 }
 
-.back-button {
-  background-color: #6c757d;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-}
 
-.back-button:hover {
-  background-color: #5a6268;
-}
 
-.disease-tabs {
+/* Control Buttons */
+.control-buttons {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
   display: flex;
-  border-bottom: 1px solid #ccc;
-  margin-bottom: 20px;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 1000;
 }
 
-.tab-link {
-  background-color: #f1f1f1;
-  border: none;
-  padding: 12px 24px;
-  cursor: pointer;
-  transition: 0.3s;
-  font-weight: 600;
-}
-
-.tab-link:hover {
-  background-color: #ddd;
-}
-
-.tab-link.active {
-  background-color: var(--secondary);
-  color: white;
-}
-
-.tab-content {
-  display: none;
-  padding: 20px 0;
-}
-
-.tab-content.active {
-  display: block;
-}
-
-.disease-content, .system-content {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 30px;
-}
-
-.disease-image, .system-image {
-  flex: 1;
-  min-width: 300px;
-}
-
-.disease-image img, .system-image img {
-  width: 100%;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-.disease-text, .system-text {
-  flex: 2;
-  min-width: 300px;
-}
-
-.disease-text h3, .system-text h3 {
-  color: var(--primary);
-  margin-top: 0;
-}
-
-.checkbox-group {
-  margin: 1.5rem 0;
-}
-
-.checkbox-group label {
+.control-button {
   display: flex;
   align-items: center;
-  margin: 10px 0;
-  padding: 14px;
-  background: white;
+  background: var(--control-bg);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.control-button:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.control-icon {
+  font-size: 1.2rem;
+  padding: 10px;
+  background: var(--secondary);
+  color: rgb(255, 255, 255);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+}
+
+.control-text {
+  padding: 0 12px;
+  white-space: nowrap;
+}
+
+.language-switcher-container select {
+  border: none;
+  padding: 10px 12px;
+  background: transparent;
+  color: var(--dark);
+  font-size: 0.9rem;
+  cursor: pointer;
+  outline: none;
+  width: 120px;
+}
+
+.about-us-container button {
+  border: none;
+  background: transparent;
+  padding: 10px 12px;
+  color: var(--dark);
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+/* Chatbot */
+.chatbot-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.chatbot-toggle {
+  padding: 10px 15px;
+  background-color: var(--secondary);
+  color: white;
+  border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  font-size: 1rem;
+  font-weight: 600;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
-.checkbox-group label:hover {
-  background: #f8f9fa;
-  transform: translateX(5px);
+.chatbot-toggle:hover {
+  background-color: #2980b9;
+  transform: translateY(-2px);
 }
 
-.checkbox-group input {
-  margin-right: 12px;
-  transform: scale(1.2);
+.chatbot {
+  display: none;
+  flex-direction: column;
+  width: 500px;
+  height: 400px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  margin-top: 10px;
 }
 
-.input-section {
-  margin-bottom: 2rem;
-  padding: 1.5rem;
-  background: white;
+.chatbot-header {
+  background-color: var(--primary);
+  color: white;
+  padding: 15px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.chatbot-messages {
+  flex-grow: 1;
+  padding: 15px;
+  overflow-y: auto;
+  max-height: 300px;
+  background: #f4f4f4;
   border-radius: 10px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
-  border-left: 4px solid var(--secondary);
+  margin-bottom: 10px;
 }
 
-.input-section h3 {
-  margin-top: 0;
-  color: var(--primary);
-  border-bottom: 2px solid #eee;
-  padding-bottom: 12px;
-  font-size: 1.2rem;
+.chatbot-input {
+  display: flex;
+  padding: 15px;
+  border-top: 1px solid #eee;
 }
 
+.chatbot-input input[type="text"] {
+  flex-grow: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-right: 10px;
+  font-size: 1rem;
+}
+
+.bubble {
+  padding: 8px 12px;
+  margin: 5px;
+  border-radius: 10px;
+  max-width: 90%;
+}
+
+.bubble a {
+  color: #0a58ca;
+  word-break: break-word;
+  text-decoration: underline;
+}
+
+.user {
+  background: #d1e7dd;
+  text-align: right;
+  align-self: flex-end;
+}
+
+.bot {
+  background: #f8d7daf5;
+  text-align: left;
+  align-self: flex-start;
+}
+
+/* Results */
 #resultDisplay {
   margin-top: 2rem;
   padding: 1.5rem;
@@ -593,58 +600,374 @@ button:active {
   padding: 12px;
 }
 
-.chatbot-messages {
-    max-height: 300px;
-    overflow-y: auto;
-    padding: 10px;
-    background: #f4f4f4;
-    border-radius: 10px;
-    margin-bottom: 10px;
+/* About Page Specific Styles */
+#about-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding-bottom: 2rem;
 }
 
-.bubble {
-    padding: 8px 12px;
-    margin: 5px;
-    border-radius: 10px;
-    max-width: 90%;
+.about-header {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  color: white;
+  padding: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: hidden;
 }
 
-.bubble a {
-  color: #0a58ca;
-  word-break: break-word;
-  text-decoration: underline;
-}
-
-.user {
-    background: #d1e7dd;
-    text-align: right;
-    align-self: flex-end;
-}
-
-.bot {
-    background: #f8d7da;
-    text-align: left;
-    align-self: flex-start;
-}
-
-input[name*="temperature"] {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  font-size: 1rem;
-  padding: 14px;
-  margin: 10px 0;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
+.about-header::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -50%;
   width: 100%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
+  transform: rotate(30deg);
+  animation: shine 8s infinite linear;
+}
+
+.about-header h1 {
+  margin: 0;
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  z-index: 2;
+}
+
+.about-content {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2.5rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  position: relative;
+  z-index: 1;
+}
+
+/* Enhanced Tabs */
+.disease-tabs {
+  display: flex;
+  border-bottom: 2px solid #e0e0e0;
+  margin-bottom: 2rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.disease-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-link {
+  background-color: #f8f9fa;
+  border: none;
+  padding: 14px 28px;
+  cursor: pointer;
   transition: all 0.3s;
-  background-color: white;
+  font-weight: 600;
+  color: var(--dark);
+  white-space: nowrap;
+  border-radius: 8px 8px 0 0;
+  margin-right: 4px;
+  position: relative;
+  overflow: hidden;
 }
 
-input[name*="temperature"]:focus {
-  border-color: var(--secondary);
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+.tab-link::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  background: var(--secondary);
+  transition: height 0.3s ease;
+  z-index: -1;
 }
 
+.tab-link:hover {
+  color: white;
+}
+
+.tab-link:hover::before {
+  height: 100%;
+}
+
+.tab-link.active {
+  background-color: var(--secondary);
+  color: white;
+  box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+}
+
+.tab-content {
+  display: none;
+  padding: 20px 0;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.tab-content.active {
+  display: block;
+  animation: tabSwitch 0.4s ease-out;
+}
+
+@keyframes tabSwitch {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Enhanced Content Layout - Fixed */
+.disease-content, .system-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  align-items: flex-start;
+}
+.disease-image {
+  order: 2; /* send to right */
+}
+.disease-image, .system-image {
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+   max-width: 100%;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.disease-image img, .system-image img {
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.disease-image img:hover, .system-image img:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 20px rgba(0,0,0,0.15);
+}
+
+.disease-text, .system-text {
+  flex: 2;
+  min-width: 300px;
+    max-width: 100%;
+}
+
+.disease-text h3, .system-text h3 {
+  color: var(--primary);
+  margin-top: 0;
+  font-size: 1.8rem;
+  border-bottom: 2px solid var(--secondary);
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+/* Ensure content takes full width when no image is present */
+.disease-content:not(:has(.disease-image)),
+.system-content:not(:has(.system-image)) {
+  display: block;
+}
+.disease-text h4, .system-text h4 {
+  color: var(--secondary);
+  margin-top: 25px;
+  margin-bottom: 15px;
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.disease-text p, .system-text p {
+  line-height: 1.8;
+  margin-bottom: 20px;
+  font-size: 1.05rem;
+}
+
+.disease-text ul, .system-text ul {
+  padding-left: 20px;
+  margin-bottom: 25px;
+}
+
+.disease-text li, .system-text li {
+  margin-bottom: 10px;
+  line-height: 1.6;
+  position: relative;
+  padding-left: 10px;
+}
+
+.disease-text li::before, .system-text li::before {
+  content: "•";
+  color: var(--secondary);
+  font-weight: bold;
+  display: inline-block;
+  width: 1em;
+  margin-left: -1em;
+}
+
+.system-text ol {
+  padding-left: 20px;
+  margin-bottom: 25px;
+  counter-reset: item;
+}
+
+.system-text ol li {
+  margin-bottom: 15px;
+  padding-left: 10px;
+  counter-increment: item;
+  position: relative;
+}
+
+.system-text ol li::before {
+  content: counter(item);
+  background: var(--secondary);
+  color: white;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  position: absolute;
+  left: -30px;
+  top: 2px;
+}
+
+
+/* Icon styling for system features */
+.system-text li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.system-text li::before {
+  content: none;
+}
+
+.system-text li {
+  padding-left: 0;
+}
+
+/* Enhanced Accuracy Section */
+.accuracy-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  margin-top: 40px;
+  padding: 30px;
+  background: linear-gradient(to right, #f8f9fa, #e9ecef);
+  border-radius: 12px;
+  border-left: 5px solid var(--secondary);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  align-items: flex-start; /* Align items to the top */
+}
+
+.accuracy-content {
+  flex: 1;
+  min-width: 300px;
+}
+
+.accuracy-content h4 {
+  color: var(--primary);
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+}
+
+.accuracy-scores {
+  margin-top: 15px;
+}
+
+.model-category {
+  margin-bottom: 25px;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+}
+
+.model-category h5 {
+  color: var(--primary);
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.model-category h6 {
+  color: var(--dark);
+  margin: 15px 0 10px 0;
+  font-size: 1rem;
+}
+
+.model-category ul {
+  padding-left: 20px;
+  margin: 0;
+}
+
+.model-category li {
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.accuracy-score {
+  font-weight: bold;
+  color: var(--success);
+  background: rgba(46, 204, 113, 0.1);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+}
+
+.accuracy-graph {
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  align-items: flex-start; /* Align to top instead of center */
+  justify-content: center;
+}
+
+.accuracy-graph .graph-image {
+  width: 100%;
+  max-height: 400px;
+  height: auto;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  border: 1px solid #e0e0e0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .accuracy-section {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 768px) {
+  .accuracy-graph {
+    min-width: 100%;
+    max-width: 100%;
+  }
+  
+  .accuracy-graph .graph-image {
+    max-height: 300px;
+  }
+}
+
+@media (max-width: 576px) {
+  .accuracy-graph .graph-image {
+    max-height: 250px;
+  }
+}
 @media (max-width: 768px) {
   .main-header, .about-header {
     flex-direction: column;
@@ -694,9 +1017,72 @@ input[name*="temperature"]:focus {
     display: inline;
   }
   
-  
-  
   .disease-content, .system-content {
     flex-direction: column;
   }
+  
+ 
+  
+  .chatbot {
+    width: 90%;
+    right: 5%;
+    left: 5%;
+  }
+  
+  .about-header {
+    gap: 15px;
+  }
+  
+  .about-header h1 {
+    font-size: 1.8rem;
+  }
+  
+  .disease-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 5px;
+  }
+  
+  .tab-link {
+    padding: 12px 20px;
+    font-size: 0.9rem;
+  }
+  
+  .disease-text h3, .system-text h3 {
+    font-size: 1.5rem;
+  }
+  
+  .disease-text h4, .system-text h4 {
+    font-size: 1.2rem;
+  }
+  
+  .accuracy-section {
+    padding: 20px;
+  }
+  
+  .model-category {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 576px) {
+  .about-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .tab-link {
+    padding: 10px 15px;
+    font-size: 0.8rem;
+  }
+  
+  .disease-text h3, .system-text h3 {
+    font-size: 1.3rem;
+  }
+  
+  .system-text ol li::before {
+    position: static;
+    margin-right: 8px;
+  }
+  
+  
 }

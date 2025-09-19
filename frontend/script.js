@@ -3,11 +3,21 @@ let selectedInputs = [];
 let currentResults = null;
 
 function showAboutPage() {
+  console.log("Showing about page");
   document.getElementById('app-container').classList.add('hidden');
   document.getElementById('about-container').classList.remove('hidden');
 }
-
+// Initialize when document is loaded
+document.addEventListener('DOMContentLoaded', function() {
+  initializeChatbot();
+  
+  // Make sure the main page is visible by default
+  document.getElementById('app-container').classList.remove('hidden');
+  document.getElementById('about-container').classList.add('hidden');
+});
+// Fix the showMainPage function
 function showMainPage() {
+  console.log("Showing main page");
   document.getElementById('about-container').classList.add('hidden');
   document.getElementById('app-container').classList.remove('hidden');
 }
@@ -549,7 +559,12 @@ function goBackToStep3() {
   document.getElementById("step4").classList.add("hidden");
   document.getElementById("step3").classList.remove("hidden");
 }
-
+// Add this function to initialize the chatbot properly
+function initializeChatbot() {
+  const chatbot = document.getElementById('chatbot');
+  chatbot.classList.add('hidden');
+  chatbot.classList.remove('visible');
+}
 function restartProcess() {
   document.getElementById("step4").classList.add("hidden");
   document.getElementById("step1").classList.remove("hidden");
@@ -631,12 +646,19 @@ document.getElementById("inputForm").addEventListener("submit", function (e) {
 
 function toggleChatbot() {
   const chatbot = document.getElementById('chatbot');
-  chatbot.style.display = (chatbot.style.display === 'none' || chatbot.style.display === '') ? 'flex' : 'none';
-  
-  if (!localStorage.getItem('chatbotOpened') && chatbot.style.display === 'flex') {
-    const messagesDiv = document.getElementById("chatbot-messages");
-    messagesDiv.innerHTML += `<div class="bubble bot">🐄 ${i18next.t('chatbot.welcome')}</div>`;
-    localStorage.setItem('chatbotOpened', 'true');
+  if (chatbot.classList.contains('hidden')) {
+    chatbot.classList.remove('hidden');
+    chatbot.classList.add('visible');
+    
+    // Add welcome message if first time opening
+    if (!localStorage.getItem('chatbotOpened')) {
+      const messagesDiv = document.getElementById("chatbot-messages");
+      messagesDiv.innerHTML += `<div class="bubble bot">🐄 ${i18next.t('chatbot.welcome')}</div>`;
+      localStorage.setItem('chatbotOpened', 'true');
+    }
+  } else {
+    chatbot.classList.remove('visible');
+    chatbot.classList.add('hidden');
   }
 }
 

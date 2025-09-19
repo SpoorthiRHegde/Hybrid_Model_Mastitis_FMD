@@ -56,7 +56,6 @@
   "select": "Select",
   "select_disease": "Select Disease",
   "mastitis": "Mastitis",
-  "fmd": "Foot and Mouth Disease (FMD)",
   "both":"Mastitis and Foot and Mouth Disease(FMD)",
   "next": "Next",
   "select_input": "Select Input Type",
@@ -105,14 +104,13 @@
     "mastitis_symptoms": "Mastitis Symptoms",
     "foot_symptoms": "Foot Symptoms",
     "mouth_symptoms": "Mouth Symptoms"
-  },
+  },"about_title": "About",
+  "back_to_main": "Back to Main",
   "about_us": "About Us",
   "disease_information": "Disease Information",
   "system_info": "System Information",
   "mastitis_info": "Mastitis directly damages the udder tissue in cows, causing swelling, heat, and pain in one or more quarters of the udder. This infection alters milk composition—making it watery, clotted, or even bloody—and reduces overall milk yield and quality. The cow often feels discomfort during milking, eats less due to stress, and may show fever in severe cases. Subclinical mastitis, though invisible, quietly reduces milk production and weakens the cow's immune system. Over time, repeated infections can cause permanent udder damage, making the cow less productive or even unfit for dairy use.",
-  "fmd_info": "FMD causes high fever and painful blisters in the mouth, tongue, gums, feet, and teats of cows. These blisters rupture and turn into ulcers, making it hard for the cow to chew, swallow, or walk. As a result, affected cows drool excessively, refuse to eat, and may become lame. Teat lesions are especially harmful in dairy cows because they reduce milk production and make milking painful. In calves, FMD can be fatal due to heart damage. Even after recovery, cows may remain weak, produce less milk, and take a long time to regain normal productivity, leading to major economic loss.",
-  "system_description": "Our AI-powered system uses a hybrid approach combining symptom-based analysis with image recognition to detect FMD and Mastitis in cattle. The system employs multiple machine learning models with high accuracy rates for early detection of these diseases.",
-  "results": {
+    "results": {
     "results": "Results",
     "disease": "Disease",
     "image_analysis": "Image Analysis",
@@ -278,5 +276,107 @@
     "page": "Page",
     "of": "of",
     "disclaimer": "DISCLAIMER: This prediction report is generated using automated machine learning models based on the inputs provided. While every effort has been made to ensure accuracy, this tool is intended for informational and preliminary screening purposes only. It is not a substitute for professional veterinary advice, diagnosis, or treatment. Always consult a licensed veterinarian for a thorough examination and appropriate medical care for your animal."
-  }
+  },
+  "mastitis_definition_title": "Mastitis",
+  "mastitis_definition": "Mastitis is the inflammation of the mammary gland (udder) in dairy animals, most commonly in cows. It is a serious problem in the dairy industry because it lowers milk yield, changes the nutritional and physical properties of milk, and increases treatment costs. Chronic mastitis can permanently damage udder tissue, leading to long-term production loss and early culling of cows.",
+
+  "mastitis_causes_title": "Causes",
+  "mastitis_cause_infectious": "Infectious agents: Bacteria such as Staphylococcus aureus, Streptococcus agalactiae, E. coli, Klebsiella, and Mycoplasma are the primary culprits. These pathogens invade the teat canal and multiply rapidly, releasing toxins that damage the udder tissue.",
+  "mastitis_cause_injury": "Injury/trauma: Any damage to the teat or udder—whether from rough handling, accidents, or improper milking machines—creates an entry point for bacteria, making the cow more vulnerable.",
+  "mastitis_cause_environment": "Environmental factors: Poor sanitation, wet or dirty bedding, contaminated feed, and unhygienic milking practices increase bacterial load and infection chances.",
+  "mastitis_cause_physiological": "Physiological factors: Stress, weakened immunity, poor nutrition, and incomplete milking reduce the cow’s natural defense mechanisms, allowing infection to take hold easily.",
+
+  "mastitis_symptoms_title": "Symptoms",
+  "mastitis_symptom_udder": "Swelling, heat, redness, hardness, or pain in one or more quarters of the udder. Severe cases may even cause visible abscesses or necrosis.",
+  "mastitis_symptom_milk": "Abnormal milk that may appear watery, clotted, thick, pus-filled, or even bloody. These changes indicate bacterial toxins and inflammation affecting milk composition.",
+  "mastitis_symptom_yield": "A noticeable drop in milk yield, sometimes up to 50% or more in severe infections.",
+  "mastitis_symptom_severe": "Systemic symptoms like fever, reduced appetite, depression, and lethargy in advanced cases. In very severe infections, cows may become toxic and collapse.",
+
+  "mastitis_treatment_title": "Treatment",
+  "mastitis_treatment_antibiotics": "Antibiotics are the mainstay of treatment. They can be administered intramammarily (directly into the udder) or systemically (through injection). Correct selection of antibiotics based on culture and sensitivity improves recovery.",
+  "mastitis_treatment_antiinflammatory": "Anti-inflammatory drugs (NSAIDs) reduce udder swelling, relieve pain, and improve the cow’s comfort and milk let-down.",
+  "mastitis_treatment_milking": "Frequent milking or stripping of infected quarters helps flush out bacteria and toxins, preventing bacterial buildup inside the udder.",
+  "mastitis_treatment_supportive": "Supportive therapy includes fluids to prevent dehydration, electrolyte balance, and nutrient-rich feed to support recovery and immune response.",
+
+  "mastitis_prevention_title": "Prevention & Control",
+  "mastitis_prevention_hygiene": "Maintain strict milking hygiene: wash and disinfect teats before and after milking, use clean equipment, and wash hands before handling cows.",
+  "mastitis_prevention_bedding": "Provide clean, dry, and soft bedding to minimize bacterial exposure. Replace soiled bedding regularly.",
+  "mastitis_prevention_isolation": "Promptly isolate infected cows to prevent spread within the herd.",
+  "mastitis_prevention_screening": "Regular screening with California Mastitis Test (CMT) or monitoring somatic cell counts (SCC) helps in early detection of subclinical cases.",
+  "mastitis_prevention_dry_cow": "Dry cow therapy with long-acting antibiotics during the non-lactating period helps eliminate hidden infections and prevents new cases at calving.",
+  "mastitis_prevention_vaccine": "Vaccination against pathogens like Staphylococcus aureus and E. coli is available in some regions to reduce infection risk.",
+
+  "mastitis_economic_title": "Economic Impact",
+  "mastitis_economic_yield": "Reduced milk yield and altered milk composition, making it unsuitable for processing and reducing profits.",
+  "mastitis_economic_costs": "Increased veterinary visits, medicines, and labor costs for treatment and care.",
+  "mastitis_economic_culling": "Chronically infected cows may have to be culled prematurely, leading to replacement costs.",
+  "mastitis_economic_rejection": "Milk from treated cows often contains antibiotic residues, which must be discarded to ensure consumer safety, causing further losses.",
+
+  "fmd": "Foot-and-Mouth Disease (FMD)",
+  "fmd_info": "Foot-and-Mouth Disease (FMD) is a highly contagious viral infection of cloven-hoofed animals such as cows, buffaloes, goats, sheep, and pigs. It spreads rapidly through saliva, milk, aerosols, contaminated feed, and farm equipment. Infected animals develop painful blisters on the mouth, tongue, gums, feet, and teats. These blisters rupture, causing ulcers, severe pain, drooling, and lameness. While adult cattle rarely die, young calves may succumb due to heart damage. Even recovered animals remain weak, produce less milk, and take longer to regain productivity.",
+
+  "fmd_definition_title": "Definition",
+  "fmd_definition": "FMD is a severe, highly contagious viral disease caused by Foot-and-Mouth Disease Virus (FMDV), an Aphthovirus. It primarily affects cloven-hoofed animals and is characterized by fever, salivation, and blister-like lesions in the mouth and feet.",
+
+  "fmd_causes_title": "Causes",
+  "fmd_cause_virus": "FMD is caused by Foot-and-Mouth Disease Virus (FMDV), which has seven distinct serotypes, making control through vaccination challenging.",
+  "fmd_cause_transmission": "The virus spreads through saliva, nasal secretions, milk, aerosols, contaminated feed, and farm equipment. Windborne transmission can carry the virus long distances.",
+  "fmd_cause_environment": "FMD virus survives for long periods in unhygienic barns, soil, contaminated pastures, and water sources, increasing the risk of outbreaks.",
+
+  "fmd_symptoms_title": "Symptoms",
+  "fmd_symptom_mouth": "Painful blisters on the tongue, lips, and gums that rupture into raw ulcers, causing difficulty in chewing and swallowing.",
+  "fmd_symptom_foot": "Blisters and sores on hooves result in lameness, reluctance to walk, and reduced grazing ability.",
+  "fmd_symptom_teats": "Blisters and lesions on teats make milking painful and reduce milk yield significantly.",
+  "fmd_symptom_general": "Systemic symptoms include fever, loss of appetite, drooling, reduced milk yield, weight loss, and weakness. In calves, sudden death may occur due to heart damage.",
+
+  "fmd_treatment_title": "Treatment",
+  "fmd_treatment_no_cure": "There is no specific antiviral cure for FMD. Management focuses on controlling symptoms and preventing spread.",
+  "fmd_treatment_supportive": "Provide pain relief, anti-inflammatory drugs, soft feed, and adequate hydration to improve comfort and recovery.",
+  "fmd_treatment_disinfection": "Regularly disinfect sheds, feeding troughs, milking machines, and other farm equipment to kill the virus.",
+  "fmd_treatment_isolation": "Infected animals must be immediately isolated to avoid spreading the disease to healthy animals.",
+
+  "fmd_prevention_title": "Prevention & Control",
+  "fmd_prevention_vaccination": "Routine vaccination programs against regional FMDV serotypes are the most effective preventive measure.",
+  "fmd_prevention_quarantine": "Newly purchased or infected animals should be quarantined for at least 2 weeks before joining the herd.",
+  "fmd_prevention_biosecurity": "Strict biosecurity measures such as controlling farm access, disinfecting footwear and vehicles, and restricting animal movement are essential.",
+  "fmd_prevention_monitoring": "Early detection, immediate reporting to authorities, and swift containment help minimize economic and herd losses.",
+
+  "fmd_economic_title": "Economic Impact",
+  "fmd_economic_milk_loss": "Severe drop in milk production due to pain, stress, and teat lesions. Recovered cows often do not regain full production.",
+  "fmd_economic_trade": "Outbreaks lead to strict trade restrictions and bans on animal movement, milk, and meat exports, causing major losses to farmers and the dairy industry.",
+  "fmd_economic_growth": "Young animals suffer poor growth, reduced fertility, and in some cases, mortality due to secondary complications or heart damage.",
+  "fmd_economic_management": "Control measures like mass vaccination, isolation, culling, and disinfection campaigns require high financial investment, burdening farmers and governments."
+
+,"system_title": "Hybrid System for FMD & Mastitis Prediction",
+    "system_description": "AI-Powered Veterinary Diagnosis Tool: Welcome to our intelligent veterinary support platform, designed to assist in the early detection of Foot-and-Mouth Disease (FMD) and Mastitis in cattle. Using a hybrid approach that combines symptom-based and image-based analysis, the system provides accurate predictions to support farmers and veterinary professionals in making timely decisions.",
+    "system_features_title": "Key Features:",
+    "system_feature_dual": "Dual Diagnostic Options: Choose the method that works best for you",
+    "system_feature_ai": "AI-Powered Disease Prediction: Random Forest and CNN models",
+    "system_feature_risk": "Risk & Confidence Scoring: Assess urgency and reliability",
+    "system_feature_pdf": "Downloadable PDF Reports: Detailed diagnosis and recommendations",
+    "system_feature_chatbot": "Built-In Chatbot Assistant: Step-by-step guidance and support",
+    "system_feature_vet": "Nearby Vet Locator: Connect with veterinary professionals",
+    "system_feature_language": "Multi-Language Interface: English, Hindi, Kannada support",
+    "system_how_to_title": "How to Use the Platform",
+    "system_step1": "Select an Input Method: Choose between symptom-based or image-based diagnosis",
+    "system_step2": "View Your Diagnosis: Get predicted condition with confidence score",
+    "system_step3": "Download Your Report: Generate PDF with detailed findings",
+    "system_step4": "Get Help If Needed: Use chatbot for assistance",
+    "system_step5": "Find a Local Vet: Locate nearby veterinary clinics",
+    "system_step6": "Switch Languages: Change interface language as needed",
+    "system_ideal_for_title": "Ideal For:",
+    "system_ideal_for": "Farmers needing accessible early-stage disease diagnosis, veterinarians looking for quick support tools, researchers and students exploring AI applications in agriculture."
+,"accuracy_title": "Model Accuracy Scores:",
+  "mastitis_models": "Mastitis Models:",
+  "mastitis_text_model": "Mastitis Text Model",
+  "mastitis_image_model": "Mastitis Image Model",
+  "fmd_models": "FMD (Foot-and-Mouth Disease) Models:",
+  "foot_models": "Foot-related Models:",
+  "foot_text_model": "Foot Text Model",
+  "foot_image_model": "Foot Image Model",
+  "mouth_models": "Mouth-related Models:",
+  "mouth_text_model": "Mouth Text Model",
+  "mouth_image_model": "Mouth Image Model"
+
+
 }
