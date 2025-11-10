@@ -1086,3 +1086,23 @@ button:active {
   
   
 }
+.video-section {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  border-left: 4px solid #4CAF50;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.video-section h4 {
+  color: #2c3e50;
+  margin-bottom: 10px;
+  font-size: 1.2em;
+}
+
+.video-section p {
+  color: #555;
+  margin-bottom: 15px;
+  font-size: 0.95em;
+}

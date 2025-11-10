@@ -3,6 +3,11 @@
     "select_input": "Please select an input before continuing.",
     "select_disease": "Please select a disease before continuing."
   },
+  "video": {
+    "title": "System Demonstration Video",
+    "description": "Watch this video to see how our system works:",
+    "unsupported": "Your browser does not support the video tag."
+  },
   "buttons": {
     "processing": "Processing...",
      "download_pdf": "Download PDF Report"
