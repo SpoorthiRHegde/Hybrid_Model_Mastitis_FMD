@@ -20,7 +20,6 @@ foot_features = ['temperature', 'milk_production', 'lethargy', 'difficulty_in_wa
 mouth_features = ['temperature', 'milk_production', 'lethargy', 'mouth_ulcers', 
                   'mouth_blister', 'salivation', 'nasal_discharge']
 
-# Separate features and target for foot and mouth datasets
 X_foot = foot_df[foot_features]
 y_foot = foot_df['fmd_status']
 
@@ -31,7 +30,6 @@ y_mouth = mouth_df['fmd_status']
 X_train_foot, X_test_foot, y_train_foot, y_test_foot = train_test_split(X_foot, y_foot, test_size=0.2, random_state=42)
 X_train_mouth, X_test_mouth, y_train_mouth, y_test_mouth = train_test_split(X_mouth, y_mouth, test_size=0.2, random_state=42)
 
-# Standardize the features for both datasets
 scaler_foot = StandardScaler()
 X_train_foot_scaled = scaler_foot.fit_transform(X_train_foot)
 X_test_foot_scaled = scaler_foot.transform(X_test_foot)
@@ -40,7 +38,6 @@ scaler_mouth = StandardScaler()
 X_train_mouth_scaled = scaler_mouth.fit_transform(X_train_mouth)
 X_test_mouth_scaled = scaler_mouth.transform(X_test_mouth)
 
-# Convert back to DataFrame to preserve feature names
 X_train_foot_scaled = pd.DataFrame(X_train_foot_scaled, columns=foot_features)
 X_test_foot_scaled = pd.DataFrame(X_test_foot_scaled, columns=foot_features)
 

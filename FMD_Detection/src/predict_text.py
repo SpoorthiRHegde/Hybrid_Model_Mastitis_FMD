@@ -123,32 +123,27 @@ def predict_fmd():
     foot_input = get_foot_input(common_input)
     mouth_input = get_mouth_input(common_input)
     
-    # Scale the inputs using the scalers
     foot_input_scaled = foot_scaler.transform(foot_input)
     mouth_input_scaled = mouth_scaler.transform(mouth_input)
-    
-    # Make predictions for foot and mouth FMD
+   
     foot_prediction = foot_model.predict(foot_input_scaled)[0]
     foot_probabilities = foot_model.predict_proba(foot_input_scaled)[0]
     
     mouth_prediction = mouth_model.predict(mouth_input_scaled)[0]
     mouth_probabilities = mouth_model.predict_proba(mouth_input_scaled)[0]
 
-    # Display results for foot FMD
     print("\nFoot FMD Prediction Result:")
     print(f"FMD Status: {'Infected' if foot_prediction == 1 else 'Healthy'}")
     print("Prediction Probabilities:")
     for i, cls in enumerate(foot_model.classes_):
         print(f"{cls}: {foot_probabilities[i]:.4f}")
     
-    # Display results for mouth FMD
     print("\nMouth FMD Prediction Result:")
     print(f"FMD Status: {'Infected' if mouth_prediction == 1 else 'Healthy'}")
     print("Prediction Probabilities:")
     for i, cls in enumerate(mouth_model.classes_):
         print(f"{cls}: {mouth_probabilities[i]:.4f}")
 
-    # Compute combined infected probability
     combined_infected_prob = (
         foot_probabilities[1] * mouth_probabilities[1] +
         foot_probabilities[1] * mouth_probabilities[0] +
